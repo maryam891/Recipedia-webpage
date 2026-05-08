@@ -133,7 +133,7 @@ require("dotenv").config();
     app.get("/getFavoriteRecipes", async (req, res) => {
       const userId = req.session.Users?.id;
       let favs = await database.all(
-        `SELECT recipes.id,instruction,name,cookTimeMinutes, servings,prepTimeMinutes, recipe_image FROM recipes INNER JOIN FavoriteRecipes ON recipe_id=FavoriteRecipes.recipe_id WHERE  FavoriteRecipes.userId =?`,
+        `SELECT recipes.id, name, cookTimeMinutes, servings, prepTimeMinutes, recipe_image, cuisine, rating FROM recipes INNER JOIN FavoriteRecipes ON recipes.id = FavoriteRecipes.recipe_id WHERE FavoriteRecipes.userId = ?`,
         [userId],
       );
       if (favs) {
