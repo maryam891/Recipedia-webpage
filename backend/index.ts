@@ -35,14 +35,7 @@ require("dotenv").config();
     const app = express();
     app.use(express.static(path.join(__dirname, "../frontend/dist")));
     app.use(express.json());
-    app.use(
-      cors({
-        origin: IN_Prod
-          ? "https://din-railway-url.up.railway.app"
-          : "http://localhost:5173",
-        credentials: true,
-      }),
-    );
+    app.set("trust proxy", 1);
     app.use(
       session({
         store: new SQLiteStore({ db: "sessions.sqlite", dir: "./" }),

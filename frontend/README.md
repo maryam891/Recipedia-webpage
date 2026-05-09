@@ -5,7 +5,7 @@ Browse through a variety of recipes and save your favorites for easy access.
 
 ## ✨ Features
 
-- 🍪 Login/Registration with cookie session
+- 🍪 Login/Registration uses express-session with cookie-based authentication and connect-sqlite3 as session store for persistent storage.
 - 🔍 Browse through a variety of recipes
 - ❤️ Save recipes to your favorites
 
