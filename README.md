@@ -1,6 +1,6 @@
 # 🍽️ Recipe Web App
 
-A full-stack recipe web application built with React, TypeScript, Node.js, and SQLite.
+A full-stack recipe web application built with React, TypeScript, Node.js/Express, and SQLite.
 Browse through a variety of recipes and save your favorites for easy access.
 
 ## ✨ Features
