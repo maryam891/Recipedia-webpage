@@ -7,10 +7,7 @@ Browse through a variety of recipes and save your favorites for easy access.
 
 - 🔍 Browse through a variety of recipes
 - ❤️ Save recipes to your favorites
-
-## ✨ Recently added feature
-
-- 🍪 Login/Registration uses express-session with cookie-based authentication and connect-sqlite3 as session store for persistent storage.
+- 🍪 **Login/Registration** — cookie-based authentication with express-session and connect-sqlite3 for persistent session storage _(May 2026)_
 
 ## 🛠️ Tech Stack
 
