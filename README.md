@@ -14,5 +14,5 @@ Browse through a variety of recipes and save your favorites for easy access.
 | Layer    | Technologies                 |
 | -------- | ---------------------------- |
 | Frontend | React, TypeScript, HTML, CSS |
-| Backend  | Node.js, Express             |
+| Backend  | Node.js/Express              |
 | Database | SQL                          |
