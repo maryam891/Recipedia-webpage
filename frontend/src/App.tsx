@@ -76,6 +76,7 @@ function App() {
           return res.json()
         }
         else {
+
           return;
         }
       })
@@ -102,6 +103,7 @@ function App() {
           return res.json()
         }
         else {
+          setIsLoggedIn(false)
           setIsLoading(false)
         }
       })

@@ -38,7 +38,6 @@ export default function Profile() {
             })
             .then((data) => {
                 if (!data) return
-                console.log("profile data:", data)
                 setUserInfo(data);
             })
             .catch((err) => {
@@ -66,7 +65,6 @@ export default function Profile() {
                             Auth?.logout()
                             navigate('/Login')
                         }}>Log out</button>
-                        {/* <button className="deleteBtn" onClick={() => handleDelAccount()}>Delete account</button> */}
                     </div>
                 </div>
             </main>

@@ -1,7 +1,6 @@
 import express from "express";
 import path from "path";
 import session from "express-session";
-import cors from "cors";
 import * as sqlite from "sqlite";
 import { Database } from "sqlite";
 import sqlite3 from "sqlite3";
@@ -152,9 +151,11 @@ require("dotenv").config();
 
     //Add favorite recipe
     app.post("/addFavoriteRecipe", async (req, res) => {
+      const userId = req.session.Users?.id;
+      const recipeId = req.body.recipe_id;
       let addFav = await database.run(
-        "INSERT INTO FavoriteRecipes(favorite_id,userId, recipe_id) VALUES(?,?,?)",
-        [(req.body.favorite_id, req.body.recipe_id, req.body.userId)],
+        "INSERT INTO FavoriteRecipes(userId, recipe_id) VALUES(?,?)",
+        [userId, recipeId],
       );
       if (addFav) {
         res.status(200).send(addFav);

@@ -15,4 +15,4 @@ Browse through a variety of recipes and save your favorites for easy access.
 | -------- | ---------------------------- |
 | Frontend | React, TypeScript, HTML, CSS |
 | Backend  | Node.js/Express              |
-| Database | SQL                          |
+| Database | SQLite                       |

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useEffect } from 'react'
 import type { Recipe } from "./Recipes"
+import "../css/RecipeModal.css"
 
 export interface ModalProps {
     recipe: Recipe | null
@@ -31,7 +32,6 @@ export interface instructionsItem {
 }
 export default function RecipeModal({ recipe, setModalOpen, modalOpen, setClickedRecipe }: ModalProps) {
     const [recipeDetails, setRecipeDetails] = useState<FullRecipeDetails | null>(null)
-    const [clickedRecipe] = useState<Recipe>(recipe!)
     const handleCloseModal = () => {
         setModalOpen(false)
         setClickedRecipe(null)
@@ -39,7 +39,7 @@ export default function RecipeModal({ recipe, setModalOpen, modalOpen, setClicke
 
     useEffect(() => {
         if (!recipe) return
-        fetch('/recipes/' + clickedRecipe.id)
+        fetch('/recipes/' + recipe.id)
             .then((response) => response.json())
             .then((result) => {
                 setRecipeDetails(result)
@@ -47,12 +47,11 @@ export default function RecipeModal({ recipe, setModalOpen, modalOpen, setClicke
             .catch((error) => {
                 console.log("Fetch error:", error)
             })
-    }, [recipe, clickedRecipe])
-    console.log(recipeDetails?.ingredientsSection)
+    }, [recipe])
     return (
         <>
             <main>
-                <h1 style={{ color: "#1C5F21", textAlign: "center", width: "auto" }}>{clickedRecipe.name}</h1>
+                <h1 style={{ color: "#1C5F21", textAlign: "center", width: "auto", padding: "10px" }}>{recipe?.name}</h1>
 
                 {recipe && modalOpen &&
                     <div className='recipe-section-container'>
