@@ -166,11 +166,11 @@ export default function Recipes() {
 
                                             }
                                             else if (item - 0.5 <= Number(recipe.rating)) {
-                                                return <FaStarHalfAlt style={{ color: "#1C5F21" }} />
+                                                return <FaStarHalfAlt style={{ color: "#1C5F21", paddingLeft: "5px" }} />
 
                                             }
                                             else {
-                                                return <CiStar key={index} />
+                                                return <CiStar style={{ paddingLeft: "5px" }} key={index} />
 
                                             }
 

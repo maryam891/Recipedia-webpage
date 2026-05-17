@@ -65,15 +65,15 @@ export default function Home() {
 
                                         if (item <= Number(popularRecipe.rating)) {
 
-                                            return <FaStar key={index} style={{ color: "#1C5F21" }} />
+                                            return <FaStar key={index} style={{ color: "#1C5F21", paddingLeft: "5px" }} />
 
                                         }
                                         else if (item - 0.5 <= Number(popularRecipe.rating)) {
-                                            return <FaStarHalfAlt style={{ color: "#1C5F21" }} />
+                                            return <FaStarHalfAlt style={{ color: "#1C5F21", paddingLeft: "5px" }} />
 
                                         }
                                         else {
-                                            return <CiStar key={index} />
+                                            return <CiStar style={{ paddingLeft: "5px" }} key={index} />
 
                                         }
 
