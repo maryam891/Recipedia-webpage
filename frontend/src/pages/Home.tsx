@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { CiStar } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";
+import { FaStarHalfAlt } from "react-icons/fa";
 
 
 
@@ -65,6 +66,10 @@ export default function Home() {
                                         if (item <= Number(popularRecipe.rating)) {
 
                                             return <FaStar key={index} style={{ color: "#1C5F21" }} />
+
+                                        }
+                                        else if (item - 0.5 <= Number(popularRecipe.rating)) {
+                                            return <FaStarHalfAlt style={{ color: "#1C5F21" }} />
 
                                         }
                                         else {

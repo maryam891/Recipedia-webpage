@@ -11,6 +11,8 @@ import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../AuthContext'
 import { CiStar } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";
+import { FaStarHalfAlt } from "react-icons/fa";
+
 
 export interface Recipe {
     name: string,
@@ -163,6 +165,10 @@ export default function Recipes() {
                                                 return <FaStar key={index} style={{ color: "#1C5F21", paddingLeft: "5px" }} />
 
                                             }
+                                            else if (item - 0.5 <= Number(recipe.rating)) {
+                                                return <FaStarHalfAlt style={{ color: "#1C5F21" }} />
+
+                                            }
                                             else {
                                                 return <CiStar key={index} />
 
@@ -227,6 +233,26 @@ export default function Recipes() {
                                     <p>{recipefilter.name}</p>
                                     <p style={{ wordSpacing: "5px" }}>Cuisine {recipefilter.cuisine}</p>
                                     <p> Rating {recipefilter.rating}</p>
+                                    {stars.map((item, index) => {
+
+                                        if (item <= Number(recipefilter.rating)) {
+
+                                            return <FaStar key={index} style={{ color: "#1C5F21", paddingLeft: "5px" }} />
+
+                                        }
+                                        else if (item - 0.5 <= Number(recipefilter.rating)) {
+                                            return <FaStarHalfAlt style={{ color: "#1C5F21" }} />
+
+                                        }
+                                        else {
+                                            return <CiStar key={index} />
+
+                                        }
+
+
+
+                                    })}
+
 
                                     <input type="button" value="See recipe" onClick={() => {
                                         setClickedRecipe(recipefilter)
