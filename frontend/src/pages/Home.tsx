@@ -3,7 +3,7 @@ import "../css/Home.css"
 import { useState } from 'react'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { CiStar } from "react-icons/ci";
+import { FaRegStar } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 import { FaStarHalfAlt } from "react-icons/fa";
 
@@ -73,7 +73,7 @@ export default function Home() {
 
                                         }
                                         else {
-                                            return <CiStar style={{ paddingLeft: "5px" }} key={index} />
+                                            return <FaRegStar style={{ paddingLeft: "5px", color: "#1C5F21" }} key={index} />
 
                                         }
 

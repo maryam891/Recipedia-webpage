@@ -9,7 +9,7 @@ import { FaRegHeart } from "react-icons/fa6";
 import { FavContext } from '../FavoriteContext'
 import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../AuthContext'
-import { CiStar } from "react-icons/ci";
+import { FaRegStar } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 import { FaStarHalfAlt } from "react-icons/fa";
 
@@ -154,7 +154,7 @@ export default function Recipes() {
 
                                     {/* Remove from favorites and show other heart icon */}
                                     <img src={recipe.recipe_image} />
-                                    <div style={{ height: "150px", marginLeft: "32px", width: "auto" }}>
+                                    <div className='recipes-textboxContainer'>
                                         <p>{recipe.name}</p>
                                         <p style={{ wordSpacing: "5px" }}>Cuisine {recipe.cuisine}</p>
                                         <p> Rating {recipe.rating} </p>
@@ -170,7 +170,7 @@ export default function Recipes() {
 
                                             }
                                             else {
-                                                return <CiStar style={{ paddingLeft: "5px" }} key={index} />
+                                                return <FaRegStar style={{ paddingLeft: "5px", color: "#1C5F21", }} key={index} />
 
                                             }
 
@@ -241,11 +241,11 @@ export default function Recipes() {
 
                                         }
                                         else if (item - 0.5 <= Number(recipefilter.rating)) {
-                                            return <FaStarHalfAlt style={{ color: "#1C5F21" }} />
+                                            return <FaStarHalfAlt style={{ color: "#1C5F21", paddingLeft: "5px" }} />
 
                                         }
                                         else {
-                                            return <CiStar key={index} />
+                                            return <FaRegStar style={{ paddingLeft: "5px", color: "#1C5F21" }} key={index} />
 
                                         }
 
