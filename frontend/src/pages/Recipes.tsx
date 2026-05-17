@@ -9,6 +9,8 @@ import { FaRegHeart } from "react-icons/fa6";
 import { FavContext } from '../FavoriteContext'
 import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../AuthContext'
+import { CiStar } from "react-icons/ci";
+import { FaStar } from "react-icons/fa";
 
 export interface Recipe {
     name: string,
@@ -36,6 +38,7 @@ export default function Recipes() {
     const Fav = useContext(FavContext)
     const [hoveredRecipeId, setHoveredRecipeId] = useState<string | null>(null)
     const [activeSearch, setActiveSearch] = useState("")
+    const stars = [1, 2, 3, 4, 5]
     const navigate = useNavigate()
     const Auth = useContext(AuthContext)
 
@@ -153,7 +156,21 @@ export default function Recipes() {
                                         <p>{recipe.name}</p>
                                         <p style={{ wordSpacing: "5px" }}>Cuisine {recipe.cuisine}</p>
                                         <p> Rating {recipe.rating} </p>
+                                        {stars.map((item, index) => {
 
+                                            if (item <= Number(recipe.rating)) {
+
+                                                return <FaStar key={index} style={{ color: "#1C5F21", paddingLeft: "5px" }} />
+
+                                            }
+                                            else {
+                                                return <CiStar key={index} />
+
+                                            }
+
+
+
+                                        })}
 
                                         {/* Show modal when clicking on a recipe */}
                                         <input type="button" value="See recipe" onClick={() => {

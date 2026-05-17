@@ -2,11 +2,11 @@ import { useNavigate } from 'react-router-dom'
 import React, { useEffect } from 'react'
 import { useContext } from 'react'
 import { AiFillHeart } from "react-icons/ai";
-import type { Recipe } from "./Recipes"
+import type { Recipe } from "../pages/Recipes"
 import { FavContext } from '../FavoriteContext'
 import { useState } from 'react';
 import "../css/Favorites.css"
-import RecipeModal from './RecipeModal';
+import RecipeModal from '../components/RecipeModal';
 export interface FavoriteRecipesProps {
     favRecipe: Recipe[]
     setFavRecipe: React.Dispatch<React.SetStateAction<Recipe[]>>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useEffect } from 'react'
-import type { Recipe } from "./Recipes"
+import type { Recipe } from "../pages/Recipes"
 import "../css/RecipeModal.css"
 
 export interface ModalProps {

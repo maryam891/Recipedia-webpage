@@ -3,6 +3,10 @@ import "../css/Home.css"
 import { useState } from 'react'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
+import { CiStar } from "react-icons/ci";
+import { FaStar } from "react-icons/fa";
+
+
 
 interface Home {
     name: string,
@@ -12,9 +16,8 @@ interface Home {
     image: string,
     recipe_image: string
 
-
-
 }
+
 export default function Home() {
     const navigate = useNavigate();
     const recipeNavigation = () => {
@@ -22,6 +25,7 @@ export default function Home() {
         navigate('/Recipes');
     }
     const [popularRecipes, setPopularRecipes] = useState<Home[]>([])
+    const stars = [1, 2, 3, 4, 5]
 
     useEffect(() => {
         fetch('/api/popular')
@@ -56,6 +60,21 @@ export default function Home() {
                                     <p style={{ padding: "5px" }}>{popularRecipe.name}</p>
                                     <p style={{ padding: "5px" }}>Cuisine {popularRecipe.cuisine}</p>
                                     <p style={{ padding: "5px" }}>Rating {popularRecipe.rating}</p>
+                                    {stars.map((item, index) => {
+
+                                        if (item <= Number(popularRecipe.rating)) {
+
+                                            return <FaStar key={index} style={{ color: "#1C5F21" }} />
+
+                                        }
+                                        else {
+                                            return <CiStar key={index} />
+
+                                        }
+
+
+
+                                    })}
                                 </div>
 
                             </div>

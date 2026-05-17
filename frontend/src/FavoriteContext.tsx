@@ -1,5 +1,5 @@
 import { useState, createContext } from "react"
-import type { Recipe } from "./components/Recipes"
+import type { Recipe } from "./pages/Recipes"
 import React from "react"
 import { useContext } from "react";
 import { AuthContext } from "./AuthContext";
