@@ -36,20 +36,32 @@ main.modal-open {
     flex-direction: row;
 }
 
+.search-field-container input {
+    border: #19521E solid 2px;
+    border-radius: 2px;
+}
+
 .input-search-icon {
     cursor: pointer;
-    font-size: 18px;
-    background-color: #fff;
-    border: solid 1px #1C5F21;
+    font-size: 20px;
+    height: 30px;
+    width: 24px;
+    background-color: #1C5F21;
     border-radius: 2px;
-    color: #19521E;
+    color: #fff;
+    transition: transform .3s ease-in-out;
+
+}
+
+.search-iconContainer {
+    height: 30px;
+
 
 }
 
 .input-search-icon:hover {
-    background-color: #1C5F21;
-    border: none;
-    color: #fff;
+    box-shadow: #191919bd 1px 1px 1px;
+
 }
 
 .search-field-container input {

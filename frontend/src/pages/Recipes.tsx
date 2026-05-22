@@ -103,7 +103,8 @@ export default function Recipes() {
                     }}>
 
                     </input>
-                    <IoIosSearch className='input-search-icon' onClick={() => { setActiveSearch(search) }}></IoIosSearch>
+                    <div className='search-iconContainer'>
+                        <IoIosSearch className='input-search-icon' onClick={() => { setActiveSearch(search) }}></IoIosSearch></div>
                 </div>
                 {/* Show h1 based on if one recipe is clicked */}
                 {!clickedRecipe ? <h1 style={{ textAlign: "center", marginTop: "10px", color: "#1C5F21" }}>Recipes</h1> : ""}
@@ -212,6 +213,7 @@ export default function Recipes() {
                                         )}</span>
 
                                 ) : (
+
                                     <span className='iconTextContainer'>
                                         <FaRegHeart
                                             style={{ padding: "7px", cursor: "pointer" }}
