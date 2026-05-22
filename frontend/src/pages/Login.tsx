@@ -7,7 +7,7 @@ import { AuthContext } from "../AuthContext"
 export default function Login() {
     const Auth = useContext(AuthContext)
     const navigate = useNavigate()
-    const [showPopUp, setShowPopUp] = useState(false);
+    const [showWelcomePopUp, setShowWelcomePopUp] = useState(false);
     const [showLoginErrPopUp, setShowLoginErrPopUp] = useState(false)
     const [submitted, setSubmitted] = useState(false)
     const [fieldErrors, setFieldErrors] = useState({
@@ -41,7 +41,8 @@ export default function Login() {
             fetch("/Login", requestOptions)
                 .then((response) => response.json())
                 .then((result) => {
-                    if (result) {
+                    if (loginForm.email.trim() === result.email && loginForm.password.trim() === result.password) {
+
                         Auth?.login({
                             email: loginForm.email,
                             password: loginForm.password,
@@ -49,7 +50,7 @@ export default function Login() {
                             name: result.name
                         })
 
-                        setShowPopUp(true)
+                        setShowWelcomePopUp(true)
                         setIsLoggedIn(true)
 
                     }
@@ -100,7 +101,7 @@ export default function Login() {
                 </div>
             }
 
-            {showPopUp && (
+            {showWelcomePopUp === true && (
                 <div className="overlay">
                     <div className="welcomePopUp">
                         <h2>Welcome back!</h2>
