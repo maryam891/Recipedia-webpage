@@ -139,8 +139,8 @@ require("dotenv").config();
     app.delete("/removeFavoriteRecipe", async (req, res) => {
       const userId = req.session.Users?.id;
       let delFavRecipe = await database.run(
-        "DELETE FROM FavoriteRecipes WHERE userId=?",
-        [userId],
+        "DELETE FROM FavoriteRecipes WHERE userId=? AND recipe_id=?",
+        [userId, req.body.recipe_id],
       );
       if (delFavRecipe) {
         res.status(200).send(delFavRecipe);

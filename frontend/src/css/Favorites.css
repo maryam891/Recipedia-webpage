@@ -23,6 +23,14 @@
 
 }
 
+.recipes-textboxContainer {
+    height: auto;
+    min-height: 150px;
+    margin-left: 5px;
+    width: auto;
+}
+
+
 
 .recipe-container {
     height: 440px;

@@ -6,6 +6,9 @@ import type { Recipe } from "../pages/Recipes"
 import { FavContext } from '../FavoriteContext'
 import { useState } from 'react';
 import "../css/Favorites.css"
+import { FaRegStar } from "react-icons/fa";
+import { FaStar } from "react-icons/fa";
+import { FaStarHalfAlt } from "react-icons/fa";
 import RecipeModal from '../components/RecipeModal';
 export interface FavoriteRecipesProps {
     favRecipe: Recipe[]
@@ -18,6 +21,7 @@ export default function FavoriteRecipes() {
     const [hoveredRecipeId, setHoveredRecipeId] = useState<null | string>(null)
     const [confirmRemoveFaveRecipe, setConfirmRemoFavRecipe] = useState(false)
     const [selectedRecipeToRemove, setSelectedRecipeToRemove] = useState<Recipe | null>(null)
+    const stars = [1, 2, 3, 4, 5]
     const navigate = useNavigate()
     const addFav = useContext(FavContext)
 
@@ -95,14 +99,33 @@ export default function FavoriteRecipes() {
                                         )}
                                     </span>
                                     <img src={recipe.recipe_image} />
-                                    <div style={{ height: "150px", marginLeft: "32px", width: "auto" }}>
+                                    <div className='recipes-textboxContainer'>
                                         <p>{recipe.name}</p>
                                         <p style={{ wordSpacing: "5px" }}>Cuisine {recipe.cuisine}</p>
                                         <p> Rating {recipe.rating}</p>
-                                        <input type="button" value="See recipe" onClick={() => {
+                                        {stars.map((item, index) => {
+
+                                            if (item <= Number(recipe.rating)) {
+
+                                                return <FaStar key={index} style={{ color: "#1C5F21", paddingLeft: "5px" }} />
+
+                                            }
+                                            else if (item - 0.5 <= Number(recipe.rating)) {
+                                                return <FaStarHalfAlt key={index} style={{ color: "#1c5f21", paddingLeft: "5px" }} />
+
+                                            }
+                                            else {
+                                                return <FaRegStar style={{ paddingLeft: "5px", color: "#1C5F21", }} key={index} />
+
+                                            }
+
+
+
+                                        })}
+                                        <button className='seeRecipe-btn' onClick={() => {
                                             setClickedRecipe(recipe)
                                             setModalOpen(true)
-                                        }} />
+                                        }}>See recipe</button>
                                     </div>
                                 </div>
                             ))

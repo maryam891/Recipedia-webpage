@@ -180,10 +180,10 @@ export default function Recipes() {
                                         })}
 
                                         {/* Show modal when clicking on a recipe */}
-                                        <input type="button" value="See recipe" onClick={() => {
+                                        <button className='seeRecipe-btn' onClick={() => {
                                             setClickedRecipe(recipe)
                                             setModalOpen(true)
-                                        }} />
+                                        }}>See recipe</button>
                                     </div>
                                 </div>
                             ))}
@@ -256,10 +256,10 @@ export default function Recipes() {
                                     })}
 
 
-                                    <input type="button" value="See recipe" onClick={() => {
+                                    <button className='seeRecipe-btn' onClick={() => {
                                         setClickedRecipe(recipefilter)
                                         setModalOpen(true)
-                                    }}></input>
+                                    }}>See recipe</button>
                                 </div>
                             </div>
 

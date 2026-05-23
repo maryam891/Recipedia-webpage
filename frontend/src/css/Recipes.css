@@ -214,7 +214,7 @@ main.modal-open {
     pointer-events: none;
 }
 
-.Recipes input {
+.seeRecipe-btn {
     cursor: pointer;
     position: relative;
     top: -20%;
@@ -235,7 +235,7 @@ main {
 }
 
 
-.Recipes input:hover {
+.seeRecipe-btn:hover {
     transform: scale(1.2);
 }
 
