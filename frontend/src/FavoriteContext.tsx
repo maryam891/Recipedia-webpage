@@ -11,12 +11,10 @@ interface FavContextType {
     addToFavorite: (recipe: Recipe) => void,
     removeFromFavorite: (recipe: Recipe) => void,
     setShowAddFavPopUp: (value: boolean) => void,
-    setRemoveFavPopUpShow: (value: boolean) => void,
     setShowAddFavErrPopUp: (value: boolean) => void,
     setShowFailedRemovePopUp: (value: boolean) => void,
     showAddFavPopUp: boolean,
     showAddFavErrPopUp: boolean,
-    removeFavPopUpShow: boolean,
     showFailedRemovePopUp: boolean
 
 }
@@ -28,17 +26,14 @@ const FavContext = createContext<FavContextType>({
     addToFavorite: () => { },
     removeFromFavorite: () => { },
     setShowAddFavPopUp: () => { },
-    setRemoveFavPopUpShow: () => { },
     setShowAddFavErrPopUp: () => { },
     setShowFailedRemovePopUp: () => { },
     showAddFavPopUp: false,
-    removeFavPopUpShow: false,
     showFailedRemovePopUp: false
 })
 const FavContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [favRecipe, setFavRecipe] = useState<Recipe[]>([])
     const [showAddFavPopUp, setShowAddFavPopUp] = useState(false)
-    const [removeFavPopUpShow, setRemoveFavPopUpShow] = useState(false)
     const [showAddFavErrPopUp, setShowAddFavErrPopUp] = useState(false)
     const [showFailedRemovePopUp, setShowFailedRemovePopUp] = useState(false)
 
@@ -81,7 +76,8 @@ const FavContextProvider = ({ children }: { children: React.ReactNode }) => {
             .then((response) => response.json())
             .then((result) => {
                 if (result) {
-                    setRemoveFavPopUpShow(true)
+                    const updated = favRecipe.filter(fav => fav.id !== recipe.id)
+                    setFavRecipe(updated)
                 }
                 else {
                     setShowFailedRemovePopUp(true)
@@ -90,6 +86,6 @@ const FavContextProvider = ({ children }: { children: React.ReactNode }) => {
 
 
     }
-    return <FavContext.Provider value={{ favRecipe, setFavRecipe, addToFavorite, removeFromFavorite, setRemoveFavPopUpShow, removeFavPopUpShow, setShowAddFavPopUp, showAddFavPopUp, setShowAddFavErrPopUp, showAddFavErrPopUp, setShowFailedRemovePopUp, showFailedRemovePopUp }}>{children}</FavContext.Provider>
+    return <FavContext.Provider value={{ favRecipe, setFavRecipe, addToFavorite, removeFromFavorite, setShowAddFavPopUp, showAddFavPopUp, setShowAddFavErrPopUp, showAddFavErrPopUp, setShowFailedRemovePopUp, showFailedRemovePopUp }}>{children}</FavContext.Provider>
 }
 export { FavContext, FavContextProvider }

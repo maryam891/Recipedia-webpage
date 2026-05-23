@@ -21,6 +21,7 @@ export default function FavoriteRecipes() {
     const [hoveredRecipeId, setHoveredRecipeId] = useState<null | string>(null)
     const [confirmRemoveFaveRecipe, setConfirmRemoFavRecipe] = useState(false)
     const [selectedRecipeToRemove, setSelectedRecipeToRemove] = useState<Recipe | null>(null)
+    const [removeFavPopUpShow, setRemoveFavPopUpShow] = useState(false)
     const stars = [1, 2, 3, 4, 5]
     const navigate = useNavigate()
     const addFav = useContext(FavContext)
@@ -53,23 +54,19 @@ export default function FavoriteRecipes() {
                     <div className='removeFav-popup'>
                         <h2>Recipe has been removed!</h2>
                         <button onClick={() => {
-                            if (selectedRecipeToRemove) {
-                                setConfirmRemoFavRecipe(false); const updated = addFav.favRecipe.filter(fav => fav.id !== selectedRecipeToRemove.id)
-                                addFav.setFavRecipe(updated)
-
-                            }
+                            setConfirmRemoFavRecipe(false)
                         }
                         } className='ok-btn'>Ok</button>
                     </div>
                 </div>
             }
-            {addFav.removeFavPopUpShow === true &&
+            {removeFavPopUpShow === true &&
                 <div className='removeFav-popup-container'>
                     <div className='removeFav-popup'>
                         <h2>Are you sure you want to remove recipe?</h2>
                         <div className='popup-btn-container'>
-                            <button onClick={() => { setConfirmRemoFavRecipe(true); addFav.setRemoveFavPopUpShow(false) }} className='yes-btn'>Yes</button>
-                            <button className='no-btn' onClick={() => addFav.setRemoveFavPopUpShow(false)
+                            <button onClick={() => { setConfirmRemoFavRecipe(true); setRemoveFavPopUpShow(false); if (selectedRecipeToRemove) addFav.removeFromFavorite(selectedRecipeToRemove) }} className='yes-btn'>Yes</button>
+                            <button className='no-btn' onClick={() => setRemoveFavPopUpShow(false)
                             }>No</button></div>
                     </div>
                 </div>
@@ -87,7 +84,7 @@ export default function FavoriteRecipes() {
                                     <span className='iconTextContainer'>
                                         <AiFillHeart
                                             onClick={() => {
-                                                addFav.setRemoveFavPopUpShow(true)
+                                                setRemoveFavPopUpShow(true)
                                                 setSelectedRecipeToRemove(recipe)
                                             }}
                                             style={{ padding: "7px", cursor: "pointer", color: "Palevioletred" }}
