@@ -167,7 +167,7 @@ export default function Recipes() {
 
                                             }
                                             else if (item - 0.5 <= Number(recipe.rating)) {
-                                                return <FaStarHalfAlt style={{ color: "#1c5f21", paddingLeft: "5px" }} />
+                                                return <FaStarHalfAlt key={index} style={{ color: "#1c5f21", paddingLeft: "5px" }} />
 
                                             }
                                             else {
@@ -243,7 +243,7 @@ export default function Recipes() {
 
                                         }
                                         else if (item - 0.5 <= Number(recipefilter.rating)) {
-                                            return <FaStarHalfAlt style={{ color: "#1C5F21", paddingLeft: "5px" }} />
+                                            return <FaStarHalfAlt key={index} style={{ color: "#1C5F21", paddingLeft: "5px" }} />
 
                                         }
                                         else {

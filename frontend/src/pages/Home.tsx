@@ -69,7 +69,7 @@ export default function Home() {
 
                                         }
                                         else if (item - 0.5 <= Number(popularRecipe.rating)) {
-                                            return <FaStarHalfAlt style={{ color: "#1C5F21", paddingLeft: "5px" }} />
+                                            return <FaStarHalfAlt key={index} style={{ color: "#1C5F21", paddingLeft: "5px" }} />
 
                                         }
                                         else {

@@ -41,23 +41,18 @@ export default function Login() {
             fetch("/Login", requestOptions)
                 .then((response) => response.json())
                 .then((result) => {
-                    if (loginForm.email.trim() === result.email && loginForm.password.trim() === result.password) {
+                    Auth?.login({
+                        email: loginForm.email,
+                        password: loginForm.password,
+                        userId: result.id || 0,
+                        name: result.name
+                    })
 
-                        Auth?.login({
-                            email: loginForm.email,
-                            password: loginForm.password,
-                            userId: result.userId || 0,
-                            name: result.name
-                        })
+                    setShowWelcomePopUp(true)
+                    setIsLoggedIn(true)
 
-                        setShowWelcomePopUp(true)
-                        setIsLoggedIn(true)
 
-                    }
-                    else {
-                        setShowLoginErrPopUp(true)
-                        setFieldErrors({ emailField: true, passwordField: true })
-                    }
+
 
                 })
                 .catch(err => {
@@ -66,6 +61,9 @@ export default function Login() {
                 })
 
 
+        }
+        else if (loginForm.email.trim().length === 0 && loginForm.password.trim().length === 0) {
+            setFieldErrors({ emailField: true, passwordField: true })
         }
         else if (loginForm.email.trim().length !== 0 && loginForm.password.trim().length === 0) {
             setFieldErrors({ emailField: true, passwordField: false })
