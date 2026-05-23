@@ -41,18 +41,21 @@ export default function Login() {
             fetch("/Login", requestOptions)
                 .then((response) => response.json())
                 .then((result) => {
-                    Auth?.login({
-                        email: loginForm.email,
-                        password: loginForm.password,
-                        userId: result.id || 0,
-                        name: result.name
-                    })
-
-                    setShowWelcomePopUp(true)
-                    setIsLoggedIn(true)
+                    if (result) {
 
 
+                        Auth?.login({
+                            email: loginForm.email,
+                            password: loginForm.password,
+                            userId: result.id || 0,
+                            name: result.name
+                        })
 
+                        setShowWelcomePopUp(true)
+                        setIsLoggedIn(true)
+
+
+                    }
 
                 })
                 .catch(err => {
