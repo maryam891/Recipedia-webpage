@@ -67,6 +67,9 @@ const FavContextProvider = ({ children }: { children: React.ReactNode }) => {
             }
 
         }
+        else {
+            setShowAddFavErrPopUp(true)
+        }
 
 
 

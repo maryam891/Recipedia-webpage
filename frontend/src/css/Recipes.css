@@ -140,7 +140,8 @@ main.modal-open {
     transform: scale(1.1);
 }
 
-.addFav-popup-btntext-container {
+.addFav-popup-btntext-container,
+.addFavPopUpErr {
     width: 400px;
     height: 300px;
     position: relative;
@@ -157,7 +158,8 @@ main.modal-open {
     padding-top: 10px;
 }
 
-.addFav-popup-btntext-container button {
+.addFav-popup-btntext-container button,
+.addFavPopUpErr button {
     transition: transform .3s ease-in-out;
     height: 40px;
     width: 100px;
@@ -167,6 +169,10 @@ main.modal-open {
     color: white;
     margin-top: 40px;
     border-radius: 5px;
+}
+
+.addFavPopUpErr button:hover {
+    transform: scale(1.1);
 }
 
 .recipe-container {
