@@ -23,6 +23,7 @@ export default function Profile() {
             navigate("/Login")
             return
         }
+
         const getProfile = async () => {
             try {
                 const response = await fetch("/user", {
@@ -55,6 +56,8 @@ export default function Profile() {
         getProfile()
     }, [Auth?.isLoggedIn, Auth?.isLoading, navigate])
     if (Auth?.isLoading) return <div>Loading...</div>
+
+
     return (
         <>
             {showProfileErrPopUp === true &&

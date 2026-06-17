@@ -33,12 +33,15 @@ require("dotenv").config();
       baseURL: "/",
       withCredentials: true,
     });
-    //Use axios interceptor to navigate the user when session is expired(401)
+    //Use axios interceptor to navigate the user when session is expired(401) and  if url is not Login since session can expire on other pages
     api.interceptors.response.use(
       (response) => response,
       (error) => {
-        if (error.response?.status === 401) {
-          window.location.href = "/Login";
+        if (
+          error.response?.status === 401 &&
+          !error.config.url.includes("/Login?sessionExpired=1")
+        ) {
+          window.location.href = "/Login?sessionExpired=1";
         }
         return Promise.reject(error);
       },
@@ -79,6 +82,14 @@ require("dotenv").config();
     app.post("/signup", async (req, res) => {
       //Hash password using bcrypt function to get unique string data
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      let alreadyExist = await database.get(
+        "SELECT Email FROM Users WHERE Email=?",
+        [req.body.Email],
+      );
+      if (alreadyExist) {
+        res.status(409).send({ message: "Email already exists" });
+        return;
+      }
       let signedUpUser = await database.run(
         "INSERT INTO Users(email, password, name) VALUES(?,?, ?)",
         [req.body.email, hashedPassword, req.body.name],

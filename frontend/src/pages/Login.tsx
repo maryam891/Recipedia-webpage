@@ -14,6 +14,7 @@ export default function Login() {
         emailField: false,
         passwordField: false
     });
+    const [showProfileErrPopUp2, setShowProfileErrPopUp2] = useState(false)
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [loginForm, setLoginForm] = useState({ email: "", password: "" })
     {/*Change border color of input based on empty and non empty field*/ }
@@ -84,7 +85,13 @@ export default function Login() {
         }
 
     }
-
+    //SetTimeout to wait to navigate to Login page when session is expired
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search)
+        if (params.get("sessionExpired") === "1") {
+            setShowProfileErrPopUp2(true)
+        }
+    }, [])
     //SetTimeout to wait to navigate to profile page when user is logged in to be able to show popup first
     useEffect(() => {
         if (isLoggedIn === true) {
@@ -114,6 +121,16 @@ export default function Login() {
                     </div>
                 </div>
             )}
+            {showProfileErrPopUp2 === true &&
+                <div className="overlay">
+                    <div className="profilePopUpErr">
+                        <h2>You are logged out!</h2>
+                        <p>You have been logged out, login again!</p>
+                        <button onClick={() => setShowProfileErrPopUp2(false)} className="profileErrBtn">Ok</button>
+
+                    </div>
+                </div>
+            }
             <section>
 
                 <div className="loginForm">
