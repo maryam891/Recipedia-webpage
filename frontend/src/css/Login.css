@@ -94,8 +94,7 @@
 }
 
 .welcomePopUp {
-    top: 20%;
-    left: 35%;
+    transform: translate(-4%, -40%);
     position: fixed;
     text-align: center;
     padding-top: 30px;
@@ -128,9 +127,7 @@
 .loginPopUpErr {
     position: fixed;
     text-align: center;
-    top: 20%;
-    left: 32%;
-    z-index: 999;
+    transform: translate(-10%, -30%);
     padding-top: 30px;
     width: auto;
     max-width: 350px;
@@ -169,15 +166,10 @@
 
 @media screen and (max-width: 407px) and (min-width: 360px) {
 
+
     .loginPopUpErr {
-        left: 10%;
-        max-width: 290px;
-
-    }
-
-    .welcomePopUp {
-        left: 10%;
-        max-width: 290px;
+        max-width: 300px;
+        transform: translate(-1%, -30%);
 
     }
 
@@ -201,13 +193,12 @@
 @media screen and (max-width: 500px) and (min-width: 407px) {
 
     .loginPopUpErr {
-        left: 15%;
         max-width: 300px;
+        transform: translate(-1%, -30%);
 
     }
 
     .welcomePopup {
-        left: 15%;
         max-width: 300px;
 
     }
@@ -233,13 +224,12 @@
 @media screen and (max-width: 646px) and (min-width:500px) {
 
     .loginPopUpErr {
-        left: 15%;
         max-width: 300px;
+        transform: translate(-1%, -30%);
 
     }
 
     .welcomePopup {
-        left: 15%;
         max-width: 300px;
 
     }
@@ -273,13 +263,12 @@
 @media screen and (max-width: 646px) and (min-width:500px) {
 
     .loginPopUpErr {
-        left: 20%;
         max-width: 300px;
+        transform: translate(-1%, -30%);
 
     }
 
     .welcomePopup {
-        left: 20%;
         max-width: 300px;
 
     }
@@ -312,14 +301,9 @@
 @media screen and (max-width:762px) and (min-width:646px) {
 
     .loginPopUpErr {
-        left: 25%;
-
+        transform: translate(-1%, -30%);
     }
 
-    .welcomePopup {
-        left: 25%;
-
-    }
 
     .loginForm {
         width: 54%;
@@ -336,6 +320,10 @@
 }
 
 @media screen and (max-width: 869px) and (min-width:762px) {
+
+    .loginPopUpErr {
+        transform: translate(-1%, -30%);
+    }
 
     .loginForm {
         width: 44%;

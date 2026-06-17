@@ -3,18 +3,15 @@ import "../css/Home.css"
 import { useState } from 'react'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { FaRegStar } from "react-icons/fa";
-import { FaStar } from "react-icons/fa";
-import { FaStarHalfAlt } from "react-icons/fa";
+import RecipeRating from "../components/RecipeRating";
 
 
 
-interface Home {
+interface Recipes {
     name: string,
     rating: number,
     cuisine: string,
     id: number,
-    image: string,
     recipe_image: string
 
 }
@@ -23,22 +20,25 @@ export default function Home() {
     const navigate = useNavigate();
     const recipeNavigation = () => {
 
-        navigate('/Recipes');
+        navigate("/Recipes");
     }
-    const [popularRecipes, setPopularRecipes] = useState<Home[]>([])
-    const stars = [1, 2, 3, 4, 5]
+    const [popularRecipes, setPopularRecipes] = useState<Recipes[]>([])
 
     useEffect(() => {
-        fetch('/api/popular')
-            .then((response) => response.json())
-            .then((result) => {
+        const getPopularRecipes = async () => {
+            try {
+                const response = await fetch('/api/popular')
+                const result = await response.json()
                 setPopularRecipes(result)
-                console.log(result)
-            })
+            } catch (error) {
+                console.log(error, "Could not get popular recipes")
+            }
+        }
+
+        getPopularRecipes()
     }, [])
 
     const image = backgroundImg
-    console.log(popularRecipes)
     return (
         <>
             <div className="Home-container">
@@ -54,32 +54,14 @@ export default function Home() {
                 <div className="popular-recipes">
                     {/* Shows popular recipes*/}
                     {popularRecipes &&
-                        popularRecipes.map((popularRecipe, index) => (
-                            <div key={index}>
-                                <img src={popularRecipe.recipe_image} style={{ height: "300px", width: "300px", borderRadius: "10px" }}></img>
-                                <div style={{ marginBottom: "10px", marginTop: "10px" }}>
-                                    <p style={{ padding: "5px" }}>{popularRecipe.name}</p>
-                                    <p style={{ padding: "5px" }}>Cuisine {popularRecipe.cuisine}</p>
-                                    <p style={{ padding: "5px" }}>Rating {popularRecipe.rating}</p>
-                                    {stars.map((item, index) => {
-
-                                        if (item <= Number(popularRecipe.rating)) {
-
-                                            return <FaStar key={index} style={{ color: "#1C5F21", paddingLeft: "5px" }} />
-
-                                        }
-                                        else if (item - 0.5 <= Number(popularRecipe.rating)) {
-                                            return <FaStarHalfAlt key={index} style={{ color: "#1C5F21", paddingLeft: "5px" }} />
-
-                                        }
-                                        else {
-                                            return <FaRegStar style={{ paddingLeft: "5px", color: "#1C5F21" }} key={index} />
-
-                                        }
-
-
-
-                                    })}
+                        popularRecipes.map((popularRecipe) => (
+                            <div key={popularRecipe.id}>
+                                <img src={popularRecipe.recipe_image} className="popularRecipes-img"></img>
+                                <div className="popularRecipes-innerContainer">
+                                    <p>{popularRecipe.name}</p>
+                                    <p>Cuisine {popularRecipe.cuisine}</p>
+                                    <p>Rating {popularRecipe.rating}</p>
+                                    <RecipeRating rating={popularRecipe.rating}></RecipeRating>
                                 </div>
 
                             </div>

@@ -6,10 +6,8 @@ import type { Recipe } from "../pages/Recipes"
 import { FavContext } from '../FavoriteContext'
 import { useState } from 'react';
 import "../css/Favorites.css"
-import { FaRegStar } from "react-icons/fa";
-import { FaStar } from "react-icons/fa";
-import { FaStarHalfAlt } from "react-icons/fa";
 import RecipeModal from '../components/RecipeModal';
+import RecipeRating from '../components/RecipeRating';
 export interface FavoriteRecipesProps {
     favRecipe: Recipe[]
     setFavRecipe: React.Dispatch<React.SetStateAction<Recipe[]>>
@@ -18,40 +16,42 @@ export interface FavoriteRecipesProps {
 export default function FavoriteRecipes() {
     const [clickedRecipe, setClickedRecipe] = useState<Recipe | null>(null)
     const [modalOpen, setModalOpen] = useState(false)
-    const [hoveredRecipeId, setHoveredRecipeId] = useState<null | string>(null)
+    const [hoveredRecipeId, setHoveredRecipeId] = useState<number | null>(null)
     const [confirmRemoveFaveRecipe, setConfirmRemoFavRecipe] = useState(false)
     const [selectedRecipeToRemove, setSelectedRecipeToRemove] = useState<Recipe | null>(null)
     const [removeFavPopUpShow, setRemoveFavPopUpShow] = useState(false)
-    const stars = [1, 2, 3, 4, 5]
     const navigate = useNavigate()
     const addFav = useContext(FavContext)
 
-    function getFav() {
-        fetch("/getFavoriteRecipes", {
-            headers: {
-                'Content-type': 'application/json',
-            },
-            credentials: 'include' as const,
-        })
-            .then((response) => response.json())
-            .then((result) => {
-                if (result) {
-                    addFav.setFavRecipe(result)
-                }
-
-            })
-    }
 
     useEffect(() => {
+        const getFav = async () => {
+            try {
+                const response = await fetch("/getFavoriteRecipes",
+                    {
+                        "credentials": 'include'
+                    }
+                )
+
+                const result = await response.json()
+
+                addFav.setFavRecipe(result);
+
+            }
+            catch (error) {
+                console.log(error, "Could not get favorite recipes")
+            }
+        }
+
         getFav()
-    }, [])
+    }, [addFav])
 
 
     return (
         <main>
             {confirmRemoveFaveRecipe === true &&
-                <div className='removeFav-popup-container'>
-                    <div className='removeFav-popup'>
+                <div className='overlay'>
+                    <div className='removeFavPopUp'>
                         <h2>Recipe has been removed!</h2>
                         <button onClick={() => {
                             setConfirmRemoFavRecipe(false)
@@ -61,9 +61,10 @@ export default function FavoriteRecipes() {
                 </div>
             }
             {removeFavPopUpShow === true &&
-                <div className='removeFav-popup-container'>
-                    <div className='removeFav-popup'>
-                        <h2>Are you sure you want to remove recipe?</h2>
+                <div className='overlay'>
+                    <div className='removeFavPopUp'>
+                        <h2>Remove recipe?</h2>
+                        <p>Are you sure you wan't to remove recipe from favorites?</p>
                         <div className='popup-btn-container'>
                             <button onClick={() => { setConfirmRemoFavRecipe(true); setRemoveFavPopUpShow(false); if (selectedRecipeToRemove) addFav.removeFromFavorite(selectedRecipeToRemove) }} className='yes-btn'>Yes</button>
                             <button className='no-btn' onClick={() => setRemoveFavPopUpShow(false)
@@ -98,37 +99,20 @@ export default function FavoriteRecipes() {
                                     <img src={recipe.recipe_image} />
                                     <div className='recipes-textboxContainer'>
                                         <p>{recipe.name}</p>
-                                        <p style={{ wordSpacing: "5px" }}>Cuisine {recipe.cuisine}</p>
+                                        <p>Cuisine {recipe.cuisine}</p>
                                         <p> Rating {recipe.rating}</p>
-                                        {stars.map((item, index) => {
-
-                                            if (item <= Number(recipe.rating)) {
-
-                                                return <FaStar key={index} style={{ color: "#1C5F21", paddingLeft: "5px" }} />
-
-                                            }
-                                            else if (item - 0.5 <= Number(recipe.rating)) {
-                                                return <FaStarHalfAlt key={index} style={{ color: "#1c5f21", paddingLeft: "5px" }} />
-
-                                            }
-                                            else {
-                                                return <FaRegStar style={{ paddingLeft: "5px", color: "#1C5F21", }} key={index} />
-
-                                            }
-
-
-
-                                        })}
-                                        <button className='seeRecipe-btn' onClick={() => {
-                                            setClickedRecipe(recipe)
-                                            setModalOpen(true)
-                                        }}>See recipe</button>
+                                        <div className='ratingBtnContainer'>
+                                            <RecipeRating rating={recipe.rating}></RecipeRating>
+                                            <button className='seeRecipe-btn' onClick={() => {
+                                                setClickedRecipe(recipe)
+                                                setModalOpen(true)
+                                            }}>See recipe</button></div>
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <div style={{ textAlign: "center", marginTop: "20px", height: "100vh" }}>
-                                <p style={{ textAlign: "center", marginTop: "50px" }}>No favorite recipes yet!</p>
+                            <div className='noFavorite-recipesContainer'>
+                                <p>No favorite recipes yet!</p>
                                 <button onClick={() => navigate("/Recipes")} className='backTo-recipes-btn'>
                                     Back to Recipes
                                 </button>

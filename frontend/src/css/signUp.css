@@ -75,8 +75,7 @@
 
 
 .errorPopUp {
-    top: 20%;
-    left: 32%;
+    transform: translate(-5%, -10%);
     position: fixed;
     width: auto;
     max-width: 400px;
@@ -94,8 +93,7 @@
 }
 
 .welcomePopup {
-    top: 20%;
-    left: 32%;
+    transform: translate(-5%, -10%);
     min-width: 300px;
     max-width: 400px;
     width: auto;
@@ -188,13 +186,12 @@
 @media screen and (max-width: 407px) and (min-width: 360px) {
 
     .errorPopUp {
-        left: 10%;
         max-width: 290px;
+        transform: translate(-1%, -20%);
 
     }
 
     .welcomePopup {
-        left: 10%;
         max-width: 290px;
 
     }
@@ -277,13 +274,11 @@
     }
 
     .errorPopUp {
-        left: 15%;
         max-width: 300px;
 
     }
 
     .welcomePopup {
-        left: 15%;
         max-width: 300px;
 
     }
@@ -291,17 +286,6 @@
 }
 
 @media screen and (max-width: 646px) and (min-width:500px) {
-    .errorPopUp {
-        left: 15%;
-        max-width: 300px;
-
-    }
-
-    .welcomePopup {
-        left: 15%;
-        max-width: 300px;
-
-    }
 
     .Signup {
         width: 70%;
@@ -350,16 +334,6 @@
     #signUpSection button {
         height: 35px;
         width: 75px;
-    }
-
-    .errorPopUp {
-        left: 25%;
-
-    }
-
-    .welcomePopup {
-        left: 25%;
-
     }
 
 

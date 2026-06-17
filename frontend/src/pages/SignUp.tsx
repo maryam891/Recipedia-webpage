@@ -59,7 +59,7 @@ export default function SignUp() {
     };
     const navigate = useNavigate();
     /*Sign up function*/
-    function signup(event: React.MouseEvent) {
+    async function signup(event: React.MouseEvent) {
         event.preventDefault()
         setSubmitted(true)
         // Validate all fields first
@@ -73,7 +73,7 @@ export default function SignUp() {
         const passwordTooShort = signUpForm.password.trim().length > 0 && signUpForm.password.trim().length < 8
         const passwordMismatch = signUpForm.password !== signUpForm.confirmPassword
 
-        // Update fieldErrors
+        // Update fieldErrors usestate values
         setFieldErrors({
             nameField: !nameEmpty,
             emailField: !emailEmpty,
@@ -81,7 +81,7 @@ export default function SignUp() {
             confirmPasswordField: !confirmPasswordEmpty
         })
 
-        // Update tooShort
+        // Update tooShort usestate values
         setTooShort({
             nameShort: nameTooShort,
             emailShort: emailTooShort,
@@ -89,7 +89,7 @@ export default function SignUp() {
             confirmPasswordShort: signUpForm.confirmPassword.trim().length > 0 && signUpForm.confirmPassword.trim().length < 8 || passwordMismatch
         })
 
-        // Stop if something is wrong
+        // Stop if any of the values are incorrect
         if (nameEmpty || emailEmpty || passwordEmpty || confirmPasswordEmpty || nameTooShort || emailTooShort || passwordTooShort || passwordMismatch) {
             setShowFailedSignUpPopUp(true)
             return
@@ -102,54 +102,48 @@ export default function SignUp() {
         }
         /*Check if the input field is not empty to send input data to backend*/
         if (signUpForm.email.trim().length !== 0 && signUpForm.password.trim().length !== 0 && signUpForm.name.trim().length !== 0) {
-            fetch("/signup", requestOptions)
-                .then((response) => response.json())
-                .then((result) => {
-                    if (result) {
-                        //Check if useContext values exists and set values to localstorage values and SignUpForm values to automatically login the user when the user signs up
-                        if (Auth) {
-                            Auth.signup({
-                                userId: result.id,
-                                email: signUpForm.email,
-                                name: signUpForm.name,
-                                password: signUpForm.password,
-                            })
-                        }
+            try {
+                const response = await fetch("/signup", requestOptions)
+                const result = await response.json()
 
-                        setUserSignedUpPopUp(true)
-                        setFieldErrors({ emailField: false, passwordField: false, confirmPasswordField: false, nameField: false })
-                        setTooShort({
-                            nameShort: false,
-                            emailShort: false,
-                            passwordShort: false,
-                            confirmPasswordShort: false
-                        })
-
-
-                    }
-                    else {
-                        setShowFailedSignUpPopUp(true)
-                        setFieldErrors({ emailField: true, passwordField: true, confirmPasswordField: true, nameField: true })
-
-                    }
-
-                })
-                .catch(() => {
-
+                if (!response.ok) {
                     setShowFailedSignUpPopUp(true)
-                });
+                    return
+                }
+                if (result && result.id) {
+                    //Check if useContext values exists and set values to localstorage values and SignUpForm values to automatically login the user when the user signs up
+                    if (Auth) {
+                        Auth.signup({
+                            userId: result.id,
+                            email: signUpForm.email,
+                            name: signUpForm.name,
+                        })
+                    }
 
-        }
-        if (signUpForm.email.trim().length !== 0 && signUpForm.password.trim().length === 0) {
-            setFieldErrors({ emailField: false, passwordField: true, confirmPasswordField: true, nameField: true })
+                    setUserSignedUpPopUp(true)
+                    setFieldErrors({ emailField: false, passwordField: false, confirmPasswordField: false, nameField: false })
+                    setTooShort({
+                        nameShort: false,
+                        emailShort: false,
+                        passwordShort: false,
+                        confirmPasswordShort: false
+                    })
 
-        }
-        else if (signUpForm.password.trim().length !== 0 && signUpForm.email.trim().length === 0) {
-            setFieldErrors({ emailField: true, passwordField: false, confirmPasswordField: false, nameField: false })
-        }
 
-        else {
-            setFieldErrors({ emailField: false, passwordField: false, confirmPasswordField: false, nameField: false })
+                }
+                else {
+                    setShowFailedSignUpPopUp(true)
+                    setFieldErrors({ emailField: true, passwordField: true, confirmPasswordField: true, nameField: true })
+
+                }
+
+
+            }
+            catch (error) {
+                console.log(error, "Failed to sign up")
+                setShowFailedSignUpPopUp(true)
+            };
+
         }
 
     }
@@ -216,7 +210,7 @@ export default function SignUp() {
                     {submitted && signUpForm.email.trim().length === 0 &&
                         <p style={{ color: "rgb(134, 19, 23)", fontSize: "13px", margin: 0 }}>Please fill in email</p>}
                     {signUpForm.email.trim().length > 0 && signUpForm.email.trim().length < 11 &&
-                        <p style={{ color: "rgb(134, 19, 23)", fontSize: "13px", margin: 0 }}>Email must be at least 11 characters</p>}
+                        <p style={{ color: "rgb(134, 19, 23)", fontSize: "13px", margin: 0 }}>Please enter a valied email adress!</p>}
                     {/*Show error message if length of email is less than 11*/}
 
                     <input type="text" name="email" value={signUpForm.email} style={styles.emailInput} onChange={(event) => {

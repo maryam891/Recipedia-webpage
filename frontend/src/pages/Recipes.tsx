@@ -9,9 +9,7 @@ import { FaRegHeart } from "react-icons/fa6";
 import { FavContext } from '../FavoriteContext'
 import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../AuthContext'
-import { FaRegStar } from "react-icons/fa";
-import { FaStar } from "react-icons/fa";
-import { FaStarHalfAlt } from "react-icons/fa";
+import RecipeRating from '../components/RecipeRating'
 
 
 export interface Recipe {
@@ -19,13 +17,11 @@ export interface Recipe {
     recipe_image: string,
     rating: number,
     cuisine: string,
-    id: string,
-    image: string,
+    id: number,
     cookTimeMinutes: number,
     servings: number,
     prepTimeMinutes: number,
-    ingredients: string,
-    instructions: string
+
 }
 export interface RecipesProps {
     favRecipe: Recipe[]
@@ -38,23 +34,30 @@ export default function Recipes() {
     const [modalOpen, setModalOpen] = useState(false)
     const [search, setSearch] = useState("")
     const Fav = useContext(FavContext)
-    const [hoveredRecipeId, setHoveredRecipeId] = useState<string | null>(null)
+    const [hoveredRecipeId, setHoveredRecipeId] = useState<number | null>(null)
     const [activeSearch, setActiveSearch] = useState("")
-    const stars = [1, 2, 3, 4, 5]
+    const [recipeToRemove, setRecipeToRemove] = useState<Recipe | null>(null)
+    const [showRemoveConfirm, setShowRemoveConfirm] = useState(false)
+    const [confirmRemoveFaveRecipe, setConfirmRemoFavRecipe] = useState(false)
     const navigate = useNavigate()
     const Auth = useContext(AuthContext)
 
 
     //Render recipes
     useEffect(() => {
-        fetch('/api/recipes')
-            .then((response) => response.json())
-            .then((result) => {
-                setRecipes(result)
-                console.log(result)
-            })
-    }, [])
+        const getRecipes = async () => {
+            try {
+                const response = await fetch("/api/recipes");
+                const result = await response.json();
 
+                setRecipes(result);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        getRecipes();
+    }, []);
 
 
     return (
@@ -66,8 +69,8 @@ export default function Recipes() {
                         <button onClick={() => Fav?.setShowFailedRemovePopUp(false)} className='addFavErr-btn'>
                             Ok
                         </button>
-
-                    </div></div>}
+                    </div>
+                </div>}
             {Fav?.showAddFavErrPopUp === true &&
                 <div className='overlay'>
                     <div className='addFavPopUpErr'>
@@ -76,11 +79,52 @@ export default function Recipes() {
                         <button onClick={() => Fav?.setShowAddFavErrPopUp(false)} className='addFavErr-btn'>
                             Ok
                         </button>
-
-                    </div></div>}
+                    </div>
+                </div>}
+            {showRemoveConfirm && recipeToRemove && (
+                <div className='overlay'>
+                    <div className='removeFavPopUp'>
+                        <h2>Remove recipe?</h2>
+                        <p>Are you sure you wan't to remove recipe from favorites?</p>
+                        <div className='popup-btn-container'>
+                            <button
+                                onClick={() => {
+                                    Fav.removeFromFavorite(recipeToRemove)
+                                    setShowRemoveConfirm(false)
+                                    setConfirmRemoFavRecipe(true);
+                                    setRecipeToRemove(null)
+                                }}
+                                className='yes-btn'
+                            >
+                                Yes
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowRemoveConfirm(false)
+                                    setRecipeToRemove(null)
+                                }}
+                                className='no-btn'
+                            >
+                                No
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {confirmRemoveFaveRecipe === true &&
+                <div className='overlay'>
+                    <div className='removeFavPopUp'>
+                        <h2>Recipe has been removed!</h2>
+                        <button onClick={() => {
+                            setConfirmRemoFavRecipe(false)
+                        }
+                        } className='ok-btn'>Ok</button>
+                    </div>
+                </div>
+            }
             <main className={modalOpen ? 'modal-open' : ''}>
                 {Fav.showAddFavPopUp && (
-                    <div className='addFav-popup-container'>
+                    <div className='overlay'>
                         <div className='addFav-popup-btntext-container'>
                             <h2>Recipe added!</h2>
                             <p>Recipe has been added to favorites!</p>
@@ -114,6 +158,7 @@ export default function Recipes() {
                         {/* check if recipes exists and if the recipe isn't clicked and modal isn't true to show all recipes */}
                         {recipes && !clickedRecipe && !modalOpen &&
                             recipes.map((recipe) => (
+
                                 <div key={recipe.id} className='recipe-container'>
 
                                     {/* Find recipe id that matches on click to add recipe to favorites and show the heart icon, confirm popup when recipe is added to favorites */}
@@ -123,9 +168,8 @@ export default function Recipes() {
                                             {/*Filter through favRecipe to find recipe that should be removed and save to setFavRecipe usestate */}
                                             <AiFillHeart
                                                 onClick={() => {
-                                                    const updated = Fav.favRecipe.filter(fav => fav.id !== recipe.id)
-                                                    Fav.setFavRecipe(updated)
-
+                                                    setRecipeToRemove(recipe)
+                                                    setShowRemoveConfirm(true)
                                                 }}
                                                 onMouseEnter={() => setHoveredRecipeId(recipe.id)}
                                                 onMouseLeave={() => setHoveredRecipeId(null)}
@@ -139,7 +183,7 @@ export default function Recipes() {
                                     ) : (
                                         <span className='iconTextContainer'>
                                             <FaRegHeart
-                                                style={{ padding: "7px", cursor: "pointer" }}
+                                                className='outlineHeart-icon'
                                                 onClick={() => {
                                                     Fav.addToFavorite(recipe)
 
@@ -157,33 +201,17 @@ export default function Recipes() {
                                     <img src={recipe.recipe_image} />
                                     <div className='recipes-textboxContainer'>
                                         <p>{recipe.name}</p>
-                                        <p style={{ wordSpacing: "5px" }}>Cuisine {recipe.cuisine}</p>
+                                        <p>Cuisine {recipe.cuisine}</p>
                                         <p> Rating {recipe.rating} </p>
-                                        {stars.map((item, index) => {
+                                        <div className='ratingBtn-Container'>
+                                            <RecipeRating rating={recipe.rating}></RecipeRating>
 
-                                            if (item <= Number(recipe.rating)) {
-
-                                                return <FaStar key={index} style={{ color: "#1C5F21", paddingLeft: "5px" }} />
-
-                                            }
-                                            else if (item - 0.5 <= Number(recipe.rating)) {
-                                                return <FaStarHalfAlt key={index} style={{ color: "#1c5f21", paddingLeft: "5px" }} />
-
-                                            }
-                                            else {
-                                                return <FaRegStar style={{ paddingLeft: "5px", color: "#1C5F21", }} key={index} />
-
-                                            }
-
-
-
-                                        })}
-
-                                        {/* Show modal when clicking on a recipe */}
-                                        <button className='seeRecipe-btn' onClick={() => {
-                                            setClickedRecipe(recipe)
-                                            setModalOpen(true)
-                                        }}>See recipe</button>
+                                            {/* Show modal when clicking on a recipe */}
+                                            <button className='seeRecipe-btn' onClick={() => {
+                                                setClickedRecipe(recipe)
+                                                setModalOpen(true)
+                                            }}>See recipe</button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -192,22 +220,21 @@ export default function Recipes() {
                     : <div className='Recipes'>
                         {/* Show only recipes that matches the search input */}
                         {recipes && recipes.filter((recipefilter) => {
-                            if (activeSearch.includes(activeSearch)) {
-                                return recipefilter.name.toLowerCase().includes(activeSearch.toLowerCase()) || recipefilter.cuisine.toLowerCase().includes(activeSearch.toLowerCase())
-
-                            }
-                            else {
-                                return false
-                            }
+                            return recipefilter.name.toLowerCase().includes(activeSearch.toLowerCase()) || recipefilter.cuisine.toLowerCase().includes(activeSearch.toLowerCase())
                             {/* Map through the filtered searched recipes to display on the browser */ }
                         }).map((recipefilter) => (
                             <div key={recipefilter.id} className='recipe-container'>
                                 {Fav.favRecipe && Fav.favRecipe.find((fav) => fav.id === recipefilter.id) ? (
                                     <span className='iconTextContainer'>
-                                        <AiFillHeart style={{ padding: "7px", cursor: "pointer", color: "Palevioletred" }} onClick={() => {
-                                            const updated = Fav.favRecipe.filter(fav => fav.id !== recipefilter.id); Fav.setFavRecipe(updated); {/*Filter through favRecipe to find recipe that should be removed and save to setFavRecipe usestate */ }
-                                        }} onMouseEnter={() => setHoveredRecipeId(recipefilter.id)}
-                                            onMouseLeave={() => setHoveredRecipeId(null)} />
+                                        <AiFillHeart
+                                            style={{ padding: "7px", cursor: "pointer", color: "Palevioletred" }}
+                                            onClick={() => {
+                                                setRecipeToRemove(recipefilter)
+                                                setShowRemoveConfirm(true)
+                                            }}
+                                            onMouseEnter={() => setHoveredRecipeId(recipefilter.id)}
+                                            onMouseLeave={() => setHoveredRecipeId(null)}
+                                        />
                                         {hoveredRecipeId === recipefilter.id && (
                                             <span className='addTofavHoverText'>Remove from favorites</span>
                                         )}</span>
@@ -216,7 +243,7 @@ export default function Recipes() {
 
                                     <span className='iconTextContainer'>
                                         <FaRegHeart
-                                            style={{ padding: "7px", cursor: "pointer" }}
+                                            className='outlineHeart-icon'
                                             onClick={() => {
                                                 Fav.addToFavorite(recipefilter)
 
@@ -231,29 +258,11 @@ export default function Recipes() {
                                 )}
 
                                 <img src={recipefilter.recipe_image} />
-                                <div style={{ height: "150px", marginLeft: "32px", width: "auto", position: "relative" }}>
+                                <div className='recipes-textboxContainer'>
                                     <p>{recipefilter.name}</p>
-                                    <p style={{ wordSpacing: "5px" }}>Cuisine {recipefilter.cuisine}</p>
+                                    <p>Cuisine {recipefilter.cuisine}</p>
                                     <p> Rating {recipefilter.rating}</p>
-                                    {stars.map((item, index) => {
-
-                                        if (item <= Number(recipefilter.rating)) {
-
-                                            return <FaStar key={index} style={{ color: "#1C5F21", paddingLeft: "5px" }} />
-
-                                        }
-                                        else if (item - 0.5 <= Number(recipefilter.rating)) {
-                                            return <FaStarHalfAlt key={index} style={{ color: "#1C5F21", paddingLeft: "5px" }} />
-
-                                        }
-                                        else {
-                                            return <FaRegStar style={{ paddingLeft: "5px", color: "#1C5F21" }} key={index} />
-
-                                        }
-
-
-
-                                    })}
+                                    <RecipeRating rating={recipefilter.rating}></RecipeRating>
 
 
                                     <button className='seeRecipe-btn' onClick={() => {

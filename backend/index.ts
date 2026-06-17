@@ -4,6 +4,7 @@ import session from "express-session";
 import * as sqlite from "sqlite";
 import { Database } from "sqlite";
 import sqlite3 from "sqlite3";
+import axios from "axios";
 const SQLiteStore = require("connect-sqlite3")(session);
 declare module "express-session" {
   interface SessionData {
@@ -28,6 +29,21 @@ require("dotenv").config();
     await database.run("PRAGMA foreign_keys = ON");
     console.log("Redo att göra databasanrop");
 
+    const api = axios.create({
+      baseURL: "/",
+      withCredentials: true,
+    });
+    //Use axios interceptor to navigate the user when session is expired(401)
+    api.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          window.location.href = "/Login";
+        }
+        return Promise.reject(error);
+      },
+    );
+    const bcrypt = require("bcrypt");
     //Expire cookie time
     const twoHours = 1000 * 60 * 60 * 2;
     const IN_Prod = process.env.NODE_ENV === "production";
@@ -50,14 +66,6 @@ require("dotenv").config();
       }),
     );
 
-    //user profile
-    app.get("/Profile", async (req, res) => {
-      if (req.session.Users) {
-        res.status(200).send(req.session.Users);
-      } else {
-        res.status(400).send({ message: "no such user" });
-      }
-    });
     //Get user that is logged in
     app.get("/user", async (req, res) => {
       if (req.session.Users) {
@@ -69,16 +77,23 @@ require("dotenv").config();
 
     //Signup
     app.post("/signup", async (req, res) => {
+      //Hash password using bcrypt function to get unique string data
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
       let signedUpUser = await database.run(
         "INSERT INTO Users(email, password, name) VALUES(?,?, ?)",
-        [req.body.email, req.body.password, req.body.name],
+        [req.body.email, hashedPassword, req.body.name],
       );
       let cookieUserInfo;
-      if (signedUpUser && signedUpUser.changes && signedUpUser.changes > 0) {
+      if (
+        signedUpUser &&
+        signedUpUser.lastID &&
+        signedUpUser.changes &&
+        signedUpUser.changes > 0
+      ) {
         cookieUserInfo = req.session.Users = {
           name: req.body.name,
           email: req.body.email,
-          id: req.body.id,
+          id: signedUpUser.lastID,
         };
       }
 
@@ -100,23 +115,36 @@ require("dotenv").config();
       res.status(200).send({ message: "Logged out" });
     });
 
-    //Check if user email and password exists to login
     app.post("/Login", async (req, res) => {
-      let logedInUsers = await database.all(
-        "SELECT * FROM Users WHERE email = ? AND password = ?",
-        [req.body.email, req.body.password],
-      );
-      let cookieUserInfo;
-      if (logedInUsers && logedInUsers.length > 0) {
-        cookieUserInfo = req.session.Users = {
-          name: logedInUsers[0].name,
-          email: logedInUsers[0].email,
-          id: logedInUsers[0].id,
-        };
-      }
-      if (cookieUserInfo) {
-        res.status(200).send(cookieUserInfo);
-      } else {
+      try {
+        let loggedInUsers = await database.all(
+          "SELECT * FROM Users WHERE email = ?",
+          [req.body.email],
+        );
+        //Get first user data
+        let user = loggedInUsers[0];
+        let cookieUserInfo;
+        //If there is a user with a matching email and password that matches the stored password, then save the session.
+        // This also handles both bcrypt-hashed passwords and older plain-text values.
+        if (loggedInUsers.length > 0 && user) {
+          const passwordMatches =
+            (await bcrypt.compare(req.body.password, user.password)) ||
+            req.body.password === user.password;
+
+          if (passwordMatches) {
+            cookieUserInfo = req.session.Users = {
+              name: loggedInUsers[0].name,
+              email: loggedInUsers[0].email,
+              id: loggedInUsers[0].id,
+            };
+          }
+        }
+        if (cookieUserInfo) {
+          res.status(200).send(cookieUserInfo);
+        } else {
+          res.status(400).send({ message: "Invalid email or password" });
+        }
+      } catch (error) {
         res.status(400).send({ message: "Invalid email or password" });
       }
     });
@@ -128,10 +156,10 @@ require("dotenv").config();
         `SELECT recipes.id, name, cookTimeMinutes, servings, prepTimeMinutes, recipe_image, cuisine, rating FROM recipes INNER JOIN FavoriteRecipes ON recipes.id = FavoriteRecipes.recipe_id WHERE FavoriteRecipes.userId = ?`,
         [userId],
       );
-      if (favs) {
+      if (favs && userId) {
         res.status(200).send(favs);
       } else {
-        res.status(400).send();
+        res.status(400).send({ message: "Not logged in" });
       }
     });
 
@@ -166,18 +194,28 @@ require("dotenv").config();
 
     //Get recipes
     app.get("/api/recipes", async (req, res) => {
-      let recipes = await database.all(
-        "SELECT name, cuisine, recipe_image, cookTimeMinutes, servings, prepTimeMinutes, rating, id FROM recipes",
-      );
-      res.send(recipes);
+      try {
+        let recipes = await database.all(
+          "SELECT name, cuisine, recipe_image, cookTimeMinutes, servings, prepTimeMinutes, rating, id FROM recipes",
+        );
+        res.send(recipes);
+      } catch (error) {
+        console.log(error, "Could not get recipes");
+        res.status(400).send();
+      }
     });
 
     //Get popular recipes
     app.get("/api/popular", async (req, res) => {
-      let popularRecipes = await database.all(
-        "SELECT name, cuisine, recipe_image, rating, id FROM recipes WHERE rating > 4.6 ",
-      );
-      res.send(popularRecipes);
+      try {
+        let popularRecipes = await database.all(
+          "SELECT name, cuisine, recipe_image, rating, id FROM recipes WHERE rating > 4.6 ",
+        );
+        res.send(popularRecipes);
+      } catch (error) {
+        console.log(error, "Could not get favorite recipes");
+        res.status(400).send({ message: "Could not get favorite recipes" });
+      }
     });
     //Get selected recipe for recipe modal
     app.get("/recipes/:id", async (req, res) => {
@@ -185,14 +223,16 @@ require("dotenv").config();
         `SELECT recipes.id,instruction,name,cookTimeMinutes, servings,prepTimeMinutes
          FROM recipes INNER JOIN instructions
          ON recipes.id=instructions.recipe_id
-         WHERE recipes.id=${req.params.id};`,
+         WHERE recipes.id= ?`,
+        [req.params.id],
       );
 
       let ingredientsDetail = await database.all(
         `SELECT recipes.id,ingredient,name,cookTimeMinutes, servings,prepTimeMinutes
          FROM recipes INNER JOIN ingredients
          ON recipes.id=ingredients.recipe_id
-         WHERE recipes.id=${req.params.id};`,
+         WHERE recipes.id= ?`,
+        [req.params.id],
       );
 
       res.send({

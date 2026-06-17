@@ -9,6 +9,25 @@
     background: transparent;
 }
 
+.ratingBtnContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    max-width: 300px;
+    width: auto;
+}
+
+.noFavorite-recipesContainer {
+    text-align: center;
+    margin-top: 20px;
+    height: 100vh;
+}
+
+.noFavorite-recipesContainer p {
+    text-align: center;
+    margin-top: 50px;
+}
+
 .Recipes {
     display: flex;
     flex-direction: row;
@@ -23,11 +42,13 @@
 
 }
 
-.recipes-textboxContainer {
+.fav-recipe-container .recipes-textboxContainer {
     height: auto;
     min-height: 150px;
     margin-left: 5px;
     width: auto;
+    padding-right: 60px;
+    box-sizing: border-box;
 }
 
 
@@ -40,16 +61,15 @@
 }
 
 .fav-recipe-container .iconTextContainer {
-    top: 285px;
-    right: 10px;
+    right: 40px;
 }
 
-.iconTextContainer svg {
+.fav-recipe-container .iconTextContainer svg {
     background: transparent;
     margin-top: 30px;
 }
 
-.removeFav-popup-container {
+.overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -59,19 +79,18 @@
     z-index: 999;
 }
 
-.removeFav-popup {
-    max-width: 400px;
-    width: auto;
-    height: auto;
-    min-height: 300px;
-    z-index: 999;
-    position: fixed;
+
+.removeFavPopUp {
+    max-width: 300px;
     background-color: white;
     padding: 20px;
     text-align: center;
     border-radius: 5px;
-    top: 20%;
-    left: 35%;
+    width: 100%;
+    height: auto;
+    min-height: 300px;
+    position: fixed;
+    transform: translate(-5%, -30%);
 }
 
 .yes-btn {
@@ -126,21 +145,25 @@
 
 .popup-btn-container {
     margin-top: 30px;
-    margin-left: 40px;
+    margin-left: 10px;
     height: auto;
     width: auto;
 }
 
-.removeFav-popup h2 {
+.removeFavPopUp h2 {
     color: #19521E;
 }
 
-.iconTextContainer .addTofavHoverText {
+.removeFavPopUp p {
+    padding: 10px;
+}
+
+.fav-recipe-container .iconTextContainer .addTofavHoverText {
     visibility: hidden;
 
 }
 
-.iconTextContainer svg:hover~.addTofavHoverText {
+.fav-recipe-container .iconTextContainer svg:hover~.addTofavHoverText {
     visibility: visible;
 }
 
@@ -158,39 +181,13 @@
     pointer-events: none;
 }
 
-@media screen and (max-width:469px) and (min-width:360px) {
-    .removeFav-popup {
-        max-width: 275px;
-        left: 10%;
+
+@media screen and (max-width:498px) and (min-width:360px) {
+
+    .removeFavPopUp {
+        width: 330px;
+        transform: translate(-1%, -30%);
     }
 
-    .popup-btn-container {
-        margin-left: 0px;
-    }
-}
-
-@media screen and (max-width:579px) and (min-width:469px) {
-    .removeFav-popup {
-        width: 350px;
-        height: 300px;
-        left: 15%;
-    }
-
-
-
-}
-
-@media screen and (max-width:760px) and (min-width:579px) {
-
-    .removeFav-popup {
-        left: 20%;
-    }
-
-}
-
-@media screen and (max-width:851px) and (min-width:760px) {
-    .removeFav-popup {
-        left: 30%;
-    }
 
 }

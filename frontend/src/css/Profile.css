@@ -11,6 +11,36 @@
     border: solid 2px #1C5F21;
 }
 
+.profilePopUpErr {
+    position: fixed;
+    text-align: center;
+    transform: translate(-10%, -10%);
+    padding-top: 30px;
+    width: auto;
+    max-width: 350px;
+    height: 300px;
+    background-color: white;
+    border: solid 2px #1C5F21;
+    border-radius: 7px;
+}
+
+.profileErrBtn {
+    transition: transform .3s ease-in-out;
+    height: 40px;
+    width: 90px;
+    background-color: #1C5F21;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 40px;
+}
+
+.profileErrBtn:hover {
+    transform: scale(1.1);
+    box-shadow: #191919 1px 1px 1px;
+}
+
 .yesDelBtn {
     transition: transform .3s ease-in-out;
     background-color: white;

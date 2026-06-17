@@ -13,41 +13,59 @@ interface Profile {
 export default function Profile() {
     const Auth = useContext(AuthContext)
     const navigate = useNavigate()
+    const [showProfileErrPopUp, setShowProfileErrPopUp] = useState(false)
     const [userInfo, setUserInfo] = useState<Profile | null>(null)
 
 
     useEffect(() => {
         if (Auth?.isLoading) return //wait until session is checked
         if (!Auth?.isLoggedIn) {
-            navigate('/Login')
+            navigate("/Login")
             return
         }
-        fetch('/Profile', {
-            method: 'GET',
-            headers: {
-                'Content-type': 'application/json',
-            },
-            credentials: 'include' as const,
-        })
-            .then((response) => {
+        const getProfile = async () => {
+            try {
+                const response = await fetch("/user", {
+                    method: 'GET',
+                    headers: {
+                        'Content-type': 'application/json',
+                    },
+                    credentials: 'include' as const,
+                })
                 if (response.status === 400 || response.status === 401) {
                     navigate('/Login')
                     return null
                 }
-                return response.json()
-            })
-            .then((data) => {
-                if (!data) return
-                setUserInfo(data);
-            })
-            .catch((err) => {
-                alert("User does not exist")
-                console.log(err.message);
-            });
+
+
+                const result = await response.json()
+                if (result) {
+
+                    setUserInfo(result);
+
+                }
+            }
+
+
+            catch (error) {
+                setShowProfileErrPopUp(true)
+                console.log(error, "User does not exist");
+            }
+        }
+        getProfile()
     }, [Auth?.isLoggedIn, Auth?.isLoading, navigate])
     if (Auth?.isLoading) return <div>Loading...</div>
     return (
         <>
+            {showProfileErrPopUp === true &&
+                <div className="overlay">
+                    <div className="profilePopUpErr">
+                        <h2>User does not exist!</h2>
+                        <button onClick={() => setShowProfileErrPopUp(false)} className="profileErrBtn">Ok</button>
+
+                    </div>
+                </div>
+            }
             <main className="Profile">
                 <h1>Profile</h1>
                 <div className="profileContainer">
@@ -61,8 +79,8 @@ export default function Profile() {
                         <input type="text" name="email" defaultValue={userInfo?.email} readOnly ></input>
                     </form>
                     <div className="btnContainer">
-                        <button className="logOutBtn" type="submit" onClick={() => {
-                            Auth?.logout()
+                        <button className="logOutBtn" type="submit" onClick={async () => {
+                            await Auth?.logout()
                             navigate('/Login')
                         }}>Log out</button>
                     </div>

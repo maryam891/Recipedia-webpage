@@ -13,6 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "@types/express-session": "^1.19.0",
+    "axios": "^1.18.0",
+    "bcrypt": "^6.0.0",
     "connect-sqlite3": "^0.9.16",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",

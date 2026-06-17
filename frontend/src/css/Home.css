@@ -9,6 +9,21 @@
     width: 100%;
 }
 
+.popularRecipes-innerContainer {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.popularRecipes-innerContainer p {
+    padding: 5px;
+}
+
+.popularRecipes-img {
+    max-height: 300px;
+    max-width: 300px;
+    border-radius: 10px;
+}
+
 .popular-Recipes-Container {
     display: flex;
     flex-direction: column;
@@ -21,7 +36,7 @@
 .popular-Recipes-Container h2 {
     text-align: left;
     color: #1C5F21;
-    margin-left: 10px;
+    margin-left: 20px;
     margin-bottom: 10px;
 }
 
@@ -49,8 +64,8 @@
     display: flex;
     flex-direction: column;
     height: auto;
-    min-height: 400px;
     min-width: 200px;
+    margin-left: 10px;
     gap: 30px;
     width: 40%;
 
@@ -58,14 +73,12 @@
 
 .Home-container button {
     cursor: pointer;
-    height: 30px;
+    height: 40px;
     width: 100px;
     border: none;
     border-radius: 10px;
     background-color: #1C5F21;
     color: azure;
-    height: 40px;
-    width: 100px;
     margin-left: 15px;
     margin-top: 10px;
     transition: transform .3s ease-in-out;
@@ -89,12 +102,12 @@
 
 @media screen and (max-width:475px) and (min-width:360px) {
     .home-text-btn-container h3 {
-        height: 100px;
+        max-height: 100px;
         min-width: 200px;
     }
 
     .home-text-btn-container h2 {
-        height: 100px;
+        max-height: 100px;
         min-width: 200px;
     }
 
@@ -106,6 +119,7 @@
     }
 
     .home-text-btn-container {
+        min-height: 400px;
         padding-top: 20px;
     }
 
@@ -132,13 +146,13 @@
 
 
     .home-text-btn-container h3 {
-        height: 100px;
+        max-height: 100px;
         min-width: 300px;
     }
 
     .home-text-btn-container h2 {
-        width: 300px;
-        height: 100px;
+        max-width: 300px;
+        max-height: 100px;
     }
 
     .Home-container {
@@ -187,6 +201,7 @@
 
     .home-text-btn-container {
         margin-top: 20px;
+        min-height: 400px;
     }
 
     .popular-Recipes-Container {

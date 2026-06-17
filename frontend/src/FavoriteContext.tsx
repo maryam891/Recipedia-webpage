@@ -39,7 +39,7 @@ const FavContextProvider = ({ children }: { children: React.ReactNode }) => {
 
     const Auth = useContext(AuthContext)
 
-    function addToFavorite(recipe: Recipe) {
+    async function addToFavorite(recipe: Recipe) {
         if (Auth?.isLoggedIn === true) {
             const requestOptions = {
                 method: 'POST',
@@ -47,42 +47,54 @@ const FavContextProvider = ({ children }: { children: React.ReactNode }) => {
                 credentials: 'include' as const,
                 body: JSON.stringify({ recipe_id: recipe.id })
             }
-            fetch('/addFavoriteRecipe', requestOptions)
-                .then((response) => response.json())
-                .then((result) => {
-                    if (result) {
-                        const newFavRecipe = [...favRecipe, recipe]
-                        setFavRecipe(newFavRecipe)
-                        setShowAddFavPopUp(true)
-                    }
-                })
+            const alreadyExist = favRecipe.find((fav) => fav.id === recipe.id)
+            if (alreadyExist) {
+                return
+            }
+            try {
+                const response = await fetch('/addFavoriteRecipe', requestOptions)
+                if (!response.ok) {
+                    setShowAddFavErrPopUp(true)
+                    return
+                }
+                await response.json()
+                const newFavRecipe = [...favRecipe, recipe]
+                setFavRecipe(newFavRecipe)
+                setShowAddFavPopUp(true)
+            }
+            catch (error) {
+                console.log(error, "Could not add favorite recipe")
+            }
 
-        }
-        else {
-            setShowAddFavErrPopUp(true)
         }
 
 
 
     }
-    function removeFromFavorite(recipe: Recipe) {
+    async function removeFromFavorite(recipe: Recipe) {
         const requestOptions = {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include' as const,
             body: JSON.stringify({ recipe_id: recipe.id })
         }
-        fetch("/removeFavoriteRecipe", requestOptions)
-            .then((response) => response.json())
-            .then((result) => {
-                if (result) {
-                    const updated = favRecipe.filter(fav => fav.id !== recipe.id)
-                    setFavRecipe(updated)
-                }
-                else {
-                    setShowFailedRemovePopUp(true)
-                }
-            })
+        try {
+
+            const response = await fetch("/removeFavoriteRecipe", requestOptions)
+
+            if (!response.ok) {
+                setShowFailedRemovePopUp(true)
+                return
+            }
+
+            await response.json()
+            const updated = favRecipe.filter(fav => fav.id !== recipe.id)
+            setFavRecipe(updated)
+
+        }
+        catch (error) {
+            console.log(error, "Could not remove favorite recipe")
+        }
 
 
     }

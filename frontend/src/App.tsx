@@ -16,7 +16,6 @@ import { AuthContext } from "./AuthContext"
 export interface User {
   email: string;
   name?: string; //make name optional
-  password: string;
   userId: number;
 
 }
@@ -64,64 +63,60 @@ function App() {
 
   };
 
-  const logout = () => {
+  const logout = async () => {
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include' as const,
     }
-    fetch("/logout", requestOptions)
-      .then((res) => {
-        if (res.status === 200) {
-          return res.json()
-        }
-        else {
+    try {
+      const response = await fetch("/logout", requestOptions)
+      if (!response.ok) {
+        return
+      }
+      await response.json()
 
-          return;
-        }
-      })
+      setCurrentUser(null);
+      setIsLoggedIn(false);
 
-      .then((result) => {
-        if (result) {
-          setCurrentUser({ email: "", password: "", userId: 0, name: "" });
-          setIsLoggedIn(false);
-        }
+    }
+    catch (error) {
+      console.log(error, "failed to log out")
+    }
 
-      })
 
   };
 
   useEffect(() => {
+    const getUser = async () => {
+      try {
 
-    fetch("/user", {
-      credentials: 'include' as const
-    }
-
-    )
-      .then((res) => {
-        if (res.status === 200) {
-          return res.json()
+        const response = await fetch("/user", {
+          credentials: 'include' as const
         }
-        else {
+
+        )
+        if (!response.ok) {
           setIsLoggedIn(false)
           setIsLoading(false)
+          return
         }
-      })
+        const result = await response.json()
+        setIsLoggedIn(true);
+        setCurrentUser({
+          email: result.email,
+          name: result.name,
+          userId: result.id
+        })
+        setIsLoading(false)
 
-      .then((result) => {
-        if (result) {
-          setIsLoggedIn(true);
-          setCurrentUser({
-            email: result.email,
-            name: result.name,
-            password: "",
-            userId: 0
-          })
-          setIsLoading(false)
-        }
+      }
 
-
-      })
+      catch (error) {
+        console.log(error, "could not get user")
+      }
+    }
+    getUser()
 
   }, []);
 

@@ -27,51 +27,55 @@ export default function Login() {
     };
 
     {/*Login function for login button*/ }
-    function Login(event: React.MouseEvent) {
+    async function Login(event: React.MouseEvent) {
         event.preventDefault()
         setSubmitted(true)
+
+        //Check if either of the input fileds are empty to stop sending fetch
+        if (loginForm.email.trim().length === 0 || loginForm.password.trim().length === 0) {
+            setFieldErrors({
+                emailField: true, passwordField: true
+            })
+            return
+        }
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include' as const,
             body: JSON.stringify({ email: loginForm.email, password: loginForm.password })
         }
-        {/*Check if the input field is not empty to send input data to backend*/ }
-        if (loginForm.email.trim().length !== 0 && loginForm.password.trim().length !== 0) {
-            fetch("/Login", requestOptions)
-                .then((response) => response.json())
-                .then((result) => {
-                    if (result) {
-
-
-                        Auth?.login({
-                            email: loginForm.email,
-                            password: loginForm.password,
-                            userId: result.id || 0,
-                            name: result.name
-                        })
-
-                        setShowWelcomePopUp(true)
-                        setIsLoggedIn(true)
-
-
-                    }
-
-                })
-                .catch(err => {
-                    console.log(err)
-                    setShowLoginErrPopUp(true)
-                })
-
+        try {
+            const response = await fetch("/Login",
+                requestOptions)
+            const result = await response.json()
+            if (!response.ok || !result.email) {
+                setShowLoginErrPopUp(true)
+                return
+            }
+            Auth?.login({
+                email: loginForm.email,
+                userId: result.id || 0,
+                name: result.name
+            })
+            setShowWelcomePopUp(true)
+            setIsLoggedIn(true)
 
         }
-        else if (loginForm.email.trim().length === 0 && loginForm.password.trim().length === 0) {
-            setFieldErrors({ emailField: true, passwordField: true })
+
+
+        catch (err) {
+            setShowLoginErrPopUp(true)
+            console.log(err, "Could not login, email or password is wrong")
+
         }
-        else if (loginForm.email.trim().length !== 0 && loginForm.password.trim().length === 0) {
+
+
+        if (loginForm.email.trim().length !== 0 && loginForm.password.trim().length === 0) {
+            setShowLoginErrPopUp(true)
             setFieldErrors({ emailField: true, passwordField: false })
         }
         else if (loginForm.password.trim().length !== 0 && loginForm.email.trim().length === 0) {
+            setShowLoginErrPopUp(true)
             setFieldErrors({ emailField: false, passwordField: true })
         }
 

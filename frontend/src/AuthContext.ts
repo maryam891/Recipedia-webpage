@@ -11,7 +11,6 @@ export interface AuthContextType {
 interface User {
   email: string;
   name?: string;
-  password: string;
   userId: number;
 }
 

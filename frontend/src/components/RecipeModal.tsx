@@ -38,15 +38,25 @@ export default function RecipeModal({ recipe, setModalOpen, modalOpen, setClicke
     }
 
     useEffect(() => {
-        if (!recipe) return
-        fetch('/recipes/' + recipe.id)
-            .then((response) => response.json())
-            .then((result) => {
+        const getClickedRecipe = async () => {
+            if (!recipe) return
+            try {
+                const response = await fetch(`/recipes/${recipe.id}`)
+
+                if (!response.ok) {
+                    return
+                }
+                const result = await response.json()
+
                 setRecipeDetails(result)
-            })
-            .catch((error) => {
-                console.log("Fetch error:", error)
-            })
+            }
+
+            catch (error) {
+                console.log("Failed to get recipe", error)
+            }
+
+        }
+        getClickedRecipe()
     }, [recipe])
     return (
         <>
