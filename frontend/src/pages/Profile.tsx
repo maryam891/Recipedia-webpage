@@ -33,11 +33,6 @@ export default function Profile() {
                     },
                     credentials: 'include' as const,
                 })
-                if (response.status === 400 || response.status === 401) {
-                    navigate('/Login')
-                    return null
-                }
-
 
                 const result = await response.json()
                 if (result) {

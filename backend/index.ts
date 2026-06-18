@@ -74,7 +74,7 @@ require("dotenv").config();
       if (req.session.Users) {
         res.status(200).send(req.session.Users);
       } else {
-        res.status(401).send({ message: "Not logged in" });
+        res.status(401).send({ message: "User does not exist" });
       }
     });
 
@@ -87,7 +87,9 @@ require("dotenv").config();
         [req.body.Email],
       );
       if (alreadyExist) {
-        res.status(409).send({ message: "Email already exists" });
+        res
+          .status(409)
+          .send({ message: "User already exist with the same email adress" });
         return;
       }
       let signedUpUser = await database.run(
@@ -111,7 +113,7 @@ require("dotenv").config();
       if (cookieUserInfo) {
         res.status(200).send(cookieUserInfo);
       } else {
-        res.status(400).send({ message: "Invalid email or password" });
+        res.status(400).send({ message: "Could not create user" });
       }
     });
 

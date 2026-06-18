@@ -140,7 +140,7 @@ export default function SignUp() {
 
             }
             catch (error) {
-                console.log(error, "Failed to sign up")
+                console.log(error, "Failed to create account")
                 setShowFailedSignUpPopUp(true)
             };
 
