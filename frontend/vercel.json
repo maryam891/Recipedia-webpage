@@ -1,0 +1,6 @@
+{
+    "rewrites":[
+        {"source":"/((?!index.html).*", "destination":"https://recipedia-webbpage-production.up.railway.app/"},
+        { "source": "/", "destination": "/index.html" }
+    ]
+}
