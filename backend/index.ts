@@ -206,7 +206,7 @@ require("dotenv").config();
     });
 
     //Get recipes
-    app.get("/api/recipes", async (req, res) => {
+    app.get("/recipes", async (req, res) => {
       try {
         let recipes = await database.all(
           "SELECT name, cuisine, recipe_image, cookTimeMinutes, servings, prepTimeMinutes, rating, id FROM recipes",
@@ -219,7 +219,7 @@ require("dotenv").config();
     });
 
     //Get popular recipes
-    app.get("/api/popular", async (req, res) => {
+    app.get("/popular", async (req, res) => {
       try {
         let popularRecipes = await database.all(
           "SELECT name, cuisine, recipe_image, rating, id FROM recipes WHERE rating > 4.6 ",
