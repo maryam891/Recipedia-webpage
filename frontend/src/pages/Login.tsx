@@ -46,7 +46,7 @@ export default function Login() {
             body: JSON.stringify({ email: loginForm.email, password: loginForm.password })
         }
         try {
-            const response = await fetch("/Login",
+            const response = await fetch("/api/Login",
                 requestOptions)
             const result = await response.json()
             if (!response.ok || !result.email) {

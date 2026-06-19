@@ -27,7 +27,7 @@ export default function FavoriteRecipes() {
     useEffect(() => {
         const getFav = async () => {
             try {
-                const response = await fetch("/getFavoriteRecipes",
+                const response = await fetch("/api/getFavoriteRecipes",
                     {
                         "credentials": 'include'
                     }

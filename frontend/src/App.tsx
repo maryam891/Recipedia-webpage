@@ -70,7 +70,7 @@ function App() {
       credentials: 'include' as const,
     }
     try {
-      const response = await fetch("/logout", requestOptions)
+      const response = await fetch("/api/logout", requestOptions)
       if (!response.ok) {
         return
       }
@@ -91,7 +91,7 @@ function App() {
     const getUser = async () => {
       try {
 
-        const response = await fetch("/user", {
+        const response = await fetch("/api/user", {
           credentials: 'include' as const
         }
 

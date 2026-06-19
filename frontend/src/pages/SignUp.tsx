@@ -103,7 +103,7 @@ export default function SignUp() {
         /*Check if the input field is not empty to send input data to backend*/
         if (signUpForm.email.trim().length !== 0 && signUpForm.password.trim().length !== 0 && signUpForm.name.trim().length !== 0) {
             try {
-                const response = await fetch("/signup", requestOptions)
+                const response = await fetch("/api/signup", requestOptions)
                 const result = await response.json()
 
                 if (!response.ok) {

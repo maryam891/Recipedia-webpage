@@ -41,7 +41,7 @@ export default function RecipeModal({ recipe, setModalOpen, modalOpen, setClicke
         const getClickedRecipe = async () => {
             if (!recipe) return
             try {
-                const response = await fetch(`/recipes/${recipe.id}`)
+                const response = await fetch("/api/recipes/" + recipe.id)
 
                 if (!response.ok) {
                     return

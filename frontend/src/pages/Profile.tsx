@@ -26,7 +26,7 @@ export default function Profile() {
 
         const getProfile = async () => {
             try {
-                const response = await fetch("/user", {
+                const response = await fetch("/api/user", {
                     method: 'GET',
                     headers: {
                         'Content-type': 'application/json',

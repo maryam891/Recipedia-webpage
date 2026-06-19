@@ -27,7 +27,7 @@ export default function Home() {
     useEffect(() => {
         const getPopularRecipes = async () => {
             try {
-                const response = await fetch('/popular')
+                const response = await fetch("/api/popular")
                 const result = await response.json()
                 setPopularRecipes(result)
             } catch (error) {

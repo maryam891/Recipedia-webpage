@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import path from "path";
 import session from "express-session";
 import * as sqlite from "sqlite";
@@ -6,6 +7,7 @@ import { Database } from "sqlite";
 import sqlite3 from "sqlite3";
 import axios from "axios";
 const SQLiteStore = require("connect-sqlite3")(session);
+
 declare module "express-session" {
   interface SessionData {
     Users: {
@@ -15,7 +17,27 @@ declare module "express-session" {
     };
   }
 }
+const app = express();
+
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5174",
+      "https://recipedia-webbpage-production.up.railway.app/api/$1",
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
+app.options("*", cors());
+
+app.use(express.json());
+
+app.set("trust proxy", 1);
+
 let database: Database;
+
 require("dotenv").config();
 (async () => {
   try {
@@ -41,7 +63,9 @@ require("dotenv").config();
           error.response?.status === 401 &&
           !error.config.url.includes("/Login?sessionExpired=1")
         ) {
-          window.location.href = "/Login?sessionExpired=1";
+          return error.response
+            .status(401)
+            .send({ message: "Session expired" });
         }
         return Promise.reject(error);
       },
@@ -50,10 +74,7 @@ require("dotenv").config();
     //Expire cookie time
     const twoHours = 1000 * 60 * 60 * 2;
     const IN_Prod = process.env.NODE_ENV === "production";
-    const app = express();
-    app.use(express.static(path.join(__dirname, "../frontend/dist")));
-    app.use(express.json());
-    app.set("trust proxy", 1);
+
     app.use(
       session({
         store: new SQLiteStore({ db: "sessions.sqlite", dir: "./" }),
@@ -70,7 +91,7 @@ require("dotenv").config();
     );
 
     //Get user that is logged in
-    app.get("/user", async (req, res) => {
+    app.get("/api/user", async (req, res) => {
       if (req.session.Users) {
         res.status(200).send(req.session.Users);
       } else {
@@ -79,7 +100,7 @@ require("dotenv").config();
     });
 
     //Signup
-    app.post("/signup", async (req, res) => {
+    app.post("/api/signup", async (req, res) => {
       //Hash password using bcrypt function to get unique string data
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
       let alreadyExist = await database.get(
@@ -118,7 +139,7 @@ require("dotenv").config();
     });
 
     //logout the user
-    app.post("/logout", async (req: any, res: any) => {
+    app.post("/api/logout", async (req: any, res: any) => {
       req.session.destroy((error: any) => {
         if (error) {
           res.status(400).send({ message: "Could not logout" });
@@ -128,7 +149,7 @@ require("dotenv").config();
       res.status(200).send({ message: "Logged out" });
     });
 
-    app.post("/Login", async (req, res) => {
+    app.post("/api/Login", async (req, res) => {
       try {
         let loggedInUsers = await database.all(
           "SELECT * FROM Users WHERE email = ?",
@@ -163,7 +184,7 @@ require("dotenv").config();
     });
 
     //Get favorite recipes
-    app.get("/getFavoriteRecipes", async (req, res) => {
+    app.get("/api/getFavoriteRecipes", async (req, res) => {
       const userId = req.session.Users?.id;
       let favs = await database.all(
         `SELECT recipes.id, name, cookTimeMinutes, servings, prepTimeMinutes, recipe_image, cuisine, rating FROM recipes INNER JOIN FavoriteRecipes ON recipes.id = FavoriteRecipes.recipe_id WHERE FavoriteRecipes.userId = ?`,
@@ -177,7 +198,7 @@ require("dotenv").config();
     });
 
     //Remove favorite recipe
-    app.delete("/removeFavoriteRecipe", async (req, res) => {
+    app.delete("/api/removeFavoriteRecipe", async (req, res) => {
       const userId = req.session.Users?.id;
       let delFavRecipe = await database.run(
         "DELETE FROM FavoriteRecipes WHERE userId=? AND recipe_id=?",
@@ -191,7 +212,7 @@ require("dotenv").config();
     });
 
     //Add favorite recipe
-    app.post("/addFavoriteRecipe", async (req, res) => {
+    app.post("/api/addFavoriteRecipe", async (req, res) => {
       const userId = req.session.Users?.id;
       const recipeId = req.body.recipe_id;
       let addFav = await database.run(
@@ -206,7 +227,7 @@ require("dotenv").config();
     });
 
     //Get recipes
-    app.get("/recipes", async (req, res) => {
+    app.get("/api/recipes", async (req, res) => {
       try {
         let recipes = await database.all(
           "SELECT name, cuisine, recipe_image, cookTimeMinutes, servings, prepTimeMinutes, rating, id FROM recipes",
@@ -219,7 +240,7 @@ require("dotenv").config();
     });
 
     //Get popular recipes
-    app.get("/popular", async (req, res) => {
+    app.get("/api/popular", async (req, res) => {
       try {
         let popularRecipes = await database.all(
           "SELECT name, cuisine, recipe_image, rating, id FROM recipes WHERE rating > 4.6 ",
@@ -231,7 +252,7 @@ require("dotenv").config();
       }
     });
     //Get selected recipe for recipe modal
-    app.get("/recipes/:id", async (req, res) => {
+    app.get("/api/recipes/:id", async (req, res) => {
       let instructionsDetail = await database.all(
         `SELECT recipes.id,instruction,name,cookTimeMinutes, servings,prepTimeMinutes
          FROM recipes INNER JOIN instructions
@@ -253,9 +274,7 @@ require("dotenv").config();
         instructionsSection: instructionsDetail,
       });
     });
-    app.get("/{*path}", (req, res) => {
-      res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
-    });
+
     app.listen(8080, () => {
       console.log("Server running on http://localhost:8080");
     });

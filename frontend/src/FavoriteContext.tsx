@@ -52,7 +52,7 @@ const FavContextProvider = ({ children }: { children: React.ReactNode }) => {
                 return
             }
             try {
-                const response = await fetch('/addFavoriteRecipe', requestOptions)
+                const response = await fetch('/api/addFavoriteRecipe', requestOptions)
                 if (!response.ok) {
                     setShowAddFavErrPopUp(true)
                     return
@@ -83,7 +83,7 @@ const FavContextProvider = ({ children }: { children: React.ReactNode }) => {
         }
         try {
 
-            const response = await fetch("/removeFavoriteRecipe", requestOptions)
+            const response = await fetch("/api/removeFavoriteRecipe", requestOptions)
 
             if (!response.ok) {
                 setShowFailedRemovePopUp(true)
