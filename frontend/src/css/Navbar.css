@@ -5,6 +5,11 @@
     position: relative;
 }
 
+.Navbar h1 {
+    margin-left: 10px;
+    color: #19521E;
+}
+
 .nav-container {
     display: flex;
     height: 60px;

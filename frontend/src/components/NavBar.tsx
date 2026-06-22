@@ -14,7 +14,7 @@ export default function NavBar() {
         <>
             <nav className='Navbar'>
                 <div className='nav-container'>
-                    <h1 style={{ marginLeft: "10px", color: "#19521E" }}>Recipedia</h1>
+                    <h1>Recipedia</h1>
 
                     {/* Desktop links */}
                     {Auth?.isLoggedIn ?

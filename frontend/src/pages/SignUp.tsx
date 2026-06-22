@@ -4,6 +4,9 @@ import { AuthContext } from "../AuthContext";
 import { useContext } from "react";
 import "../css/signUp.css"
 import { CiUser } from "react-icons/ci";
+import api from "../api";
+
+
 export default function SignUp() {
     const [userSignedUpPopUp, setUserSignedUpPopUp] = useState(false)
     const Auth = useContext(AuthContext)
@@ -62,7 +65,7 @@ export default function SignUp() {
     async function signup(event: React.MouseEvent) {
         event.preventDefault()
         setSubmitted(true)
-        // Validate all fields first
+        //Assign fields to variables
         const nameEmpty = signUpForm.name.trim().length === 0
         const emailEmpty = signUpForm.email.trim().length === 0
         const passwordEmpty = signUpForm.password.trim().length === 0
@@ -89,62 +92,50 @@ export default function SignUp() {
             confirmPasswordShort: signUpForm.confirmPassword.trim().length > 0 && signUpForm.confirmPassword.trim().length < 8 || passwordMismatch
         })
 
-        // Stop if any of the values are incorrect
+        //Stop if any input field is empty
         if (nameEmpty || emailEmpty || passwordEmpty || confirmPasswordEmpty || nameTooShort || emailTooShort || passwordTooShort || passwordMismatch) {
             setShowFailedSignUpPopUp(true)
             return
         }
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include' as const,
-            body: JSON.stringify({ email: signUpForm.email, password: signUpForm.password, name: signUpForm.name })
-        }
-        /*Check if the input field is not empty to send input data to backend*/
-        if (signUpForm.email.trim().length !== 0 && signUpForm.password.trim().length !== 0 && signUpForm.name.trim().length !== 0) {
-            try {
-                const response = await fetch("/api/signup", requestOptions)
-                const result = await response.json()
+        try {
+            const response = await api.post("/api/signup", { email: signUpForm.email, password: signUpForm.password, name: signUpForm.name })
+            const result = response.data
 
-                if (!response.ok) {
-                    setShowFailedSignUpPopUp(true)
-                    return
-                }
-                if (result && result.id) {
-                    //Check if useContext values exists and set values to localstorage values and SignUpForm values to automatically login the user when the user signs up
-                    if (Auth) {
-                        Auth.signup({
-                            userId: result.id,
-                            email: signUpForm.email,
-                            name: signUpForm.name,
-                        })
-                    }
-
-                    setUserSignedUpPopUp(true)
-                    setFieldErrors({ emailField: false, passwordField: false, confirmPasswordField: false, nameField: false })
-                    setTooShort({
-                        nameShort: false,
-                        emailShort: false,
-                        passwordShort: false,
-                        confirmPasswordShort: false
+            if (result && result.id) {
+                //Check if useContext values exists and set values to localstorage values and SignUpForm values to automatically login the user when the user signs up
+                if (Auth) {
+                    Auth.signup({
+                        userId: result.id,
+                        email: signUpForm.email,
+                        name: signUpForm.name,
                     })
-
-
                 }
-                else {
-                    setShowFailedSignUpPopUp(true)
-                    setFieldErrors({ emailField: true, passwordField: true, confirmPasswordField: true, nameField: true })
 
-                }
+                setUserSignedUpPopUp(true)
+                setFieldErrors({ emailField: false, passwordField: false, confirmPasswordField: false, nameField: false })
+                setTooShort({
+                    nameShort: false,
+                    emailShort: false,
+                    passwordShort: false,
+                    confirmPasswordShort: false
+                })
 
 
             }
-            catch (error) {
-                console.log(error, "Failed to create account")
+            else {
                 setShowFailedSignUpPopUp(true)
-            };
+                setFieldErrors({ emailField: true, passwordField: true, confirmPasswordField: true, nameField: true })
+
+            }
+
 
         }
+        catch (error) {
+            console.log(error, "Failed to create account")
+            setShowFailedSignUpPopUp(true)
+        };
+
+
 
     }
     //Show welcome modal for a few seconds and navigate to profile page when user is signed up

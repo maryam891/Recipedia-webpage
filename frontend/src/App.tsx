@@ -12,6 +12,7 @@ import SignUp from "./pages/SignUp"
 import { useState } from "react"
 import { useEffect } from "react"
 import { AuthContext } from "./AuthContext"
+import api from "./api"
 
 export interface User {
   email: string;
@@ -64,18 +65,9 @@ function App() {
   };
 
   const logout = async () => {
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include' as const,
-    }
-    try {
-      const response = await fetch("/api/logout", requestOptions)
-      if (!response.ok) {
-        return
-      }
-      await response.json()
 
+    try {
+      await api.post("/api/logout")
       setCurrentUser(null);
       setIsLoggedIn(false);
 
@@ -91,17 +83,8 @@ function App() {
     const getUser = async () => {
       try {
 
-        const response = await fetch("/api/user", {
-          credentials: 'include' as const
-        }
-
-        )
-        if (!response.ok) {
-          setIsLoggedIn(false)
-          setIsLoading(false)
-          return
-        }
-        const result = await response.json()
+        const response = await api.get("/api/user")
+        const result = await response.data
         setIsLoggedIn(true);
         setCurrentUser({
           email: result.email,
@@ -113,6 +96,8 @@ function App() {
       }
 
       catch (error) {
+        setIsLoggedIn(false)
+        setIsLoading(false)
         console.log(error, "could not get user")
       }
     }

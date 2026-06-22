@@ -5,6 +5,7 @@ import { useContext } from "react";
 import "../css/Profile.css"
 import { useEffect } from "react";
 import { useState } from "react";
+import api from "../api";
 
 interface Profile {
     name: string,
@@ -26,15 +27,9 @@ export default function Profile() {
 
         const getProfile = async () => {
             try {
-                const response = await fetch("/api/user", {
-                    method: 'GET',
-                    headers: {
-                        'Content-type': 'application/json',
-                    },
-                    credentials: 'include' as const,
-                })
+                const response = await api.get("/api/user")
 
-                const result = await response.json()
+                const result = response.data
                 if (result) {
 
                     setUserInfo(result);

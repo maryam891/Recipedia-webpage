@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import type { Recipe } from "../pages/Recipes"
 import "../css/RecipeModal.css"
+import api from '../api'
 
 export interface ModalProps {
     recipe: Recipe | null
@@ -41,12 +42,9 @@ export default function RecipeModal({ recipe, setModalOpen, modalOpen, setClicke
         const getClickedRecipe = async () => {
             if (!recipe) return
             try {
-                const response = await fetch("/api/recipes/" + recipe.id)
+                const response = await api.get("/api/recipes/" + recipe.id)
 
-                if (!response.ok) {
-                    return
-                }
-                const result = await response.json()
+                const result = await response.data
 
                 setRecipeDetails(result)
             }

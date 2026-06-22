@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import "../css/Login.css"
 import { useContext } from "react"
 import { AuthContext } from "../AuthContext"
+import api from "../api"
 
 export default function Login() {
     const Auth = useContext(AuthContext)
@@ -32,24 +33,19 @@ export default function Login() {
         event.preventDefault()
         setSubmitted(true)
 
-        //Check if either of the input fileds are empty to stop sending fetch
+        //Check if either of the input fileds are empty to stop request
         if (loginForm.email.trim().length === 0 || loginForm.password.trim().length === 0) {
             setFieldErrors({
                 emailField: true, passwordField: true
             })
             return
         }
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include' as const,
-            body: JSON.stringify({ email: loginForm.email, password: loginForm.password })
-        }
+
         try {
-            const response = await fetch("/api/Login",
-                requestOptions)
-            const result = await response.json()
-            if (!response.ok || !result.email) {
+            const response = await api.post("/api/Login", { email: loginForm.email, password: loginForm.password })
+            const result = response.data
+
+            if (!result.email) {
                 setShowLoginErrPopUp(true)
                 return
             }
@@ -70,19 +66,6 @@ export default function Login() {
 
         }
 
-
-        if (loginForm.email.trim().length !== 0 && loginForm.password.trim().length === 0) {
-            setShowLoginErrPopUp(true)
-            setFieldErrors({ emailField: true, passwordField: false })
-        }
-        else if (loginForm.password.trim().length !== 0 && loginForm.email.trim().length === 0) {
-            setShowLoginErrPopUp(true)
-            setFieldErrors({ emailField: false, passwordField: true })
-        }
-
-        else {
-            setFieldErrors({ emailField: false, passwordField: false })
-        }
 
     }
     //SetTimeout to wait to navigate to Login page when session is expired
@@ -123,7 +106,7 @@ export default function Login() {
             )}
             {showProfileErrPopUp2 === true &&
                 <div className="overlay">
-                    <div className="profilePopUpErr">
+                    <div className="loginPopUpErr">
                         <h2>You are logged out!</h2>
                         <p>You have been logged out, login again!</p>
                         <button onClick={() => setShowProfileErrPopUp2(false)} className="profileErrBtn">Ok</button>

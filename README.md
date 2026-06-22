@@ -1,6 +1,7 @@
 # 🍽️ Recipe Web App
 
-A full-stack recipe web application built with React, TypeScript, Node.js/Express, and SQLite.
+A full-stack recipe web application built with React, TypeScript, Node.js/Express, and SQLite. Login/registration has cookie-based authentication and passwords are securely hashed using bcrypt before storage and validated using bcrypt.compare during authentication.
+
 Browse through a variety of recipes and save your favorites for easy access.
 
 ## ✨ Features

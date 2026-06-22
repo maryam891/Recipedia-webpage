@@ -131,15 +131,13 @@
     padding-top: 30px;
     width: auto;
     max-width: 350px;
+    color: #1C5F21;
     height: 300px;
     background-color: white;
     border: solid 2px #1C5F21;
     border-radius: 7px;
 }
 
-.loginPopUpErr h2 {
-    color: #1C5F21
-}
 
 .loginPopUpErr p {
     padding: 15px;

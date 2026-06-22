@@ -1,22 +1,41 @@
+#Use official Node.js runtime as base image
 FROM node:18
 
+#Set working directory
 WORKDIR /app
 
+#Copy frontend package files
 COPY frontend/package*.json ./frontend/
+
+#Install frontend dependencies
 RUN cd frontend && npm install
 
+#Copy backend package files
 COPY backend/package*.json ./backend/
+
+#Install backend dependencies
 RUN cd backend && npm install
 
+#Copy frontend source code
 COPY frontend/ ./frontend/
+
+#Build frontend(production)
 RUN cd frontend && npm run build
 
+#Copy backend source code
 COPY backend/ ./backend/
+
+#Copy SQLite databse file into backend
 COPY backend/recipedia.sqlite ./backend/
+
+#Build backend
 RUN cd backend && npm run build
 
+#Set working directory to backend(where server runs)
 WORKDIR /app/backend
 
+#Backend port that is used
 EXPOSE 8080
 
-CMD ["node", "index.js"]
+#Start backend server
+CMD ["npm", "start"]

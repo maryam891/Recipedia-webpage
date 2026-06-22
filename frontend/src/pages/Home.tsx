@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import RecipeRating from "../components/RecipeRating";
+import api from "../api";
 
 
 
@@ -27,8 +28,8 @@ export default function Home() {
     useEffect(() => {
         const getPopularRecipes = async () => {
             try {
-                const response = await fetch("/api/popular")
-                const result = await response.json()
+                const response = await api.get("/api/popular")
+                const result = response.data
                 setPopularRecipes(result)
             } catch (error) {
                 console.log(error, "Could not get popular recipes")

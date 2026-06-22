@@ -8,6 +8,7 @@ import { useState } from 'react';
 import "../css/Favorites.css"
 import RecipeModal from '../components/RecipeModal';
 import RecipeRating from '../components/RecipeRating';
+import api from "../api"
 export interface FavoriteRecipesProps {
     favRecipe: Recipe[]
     setFavRecipe: React.Dispatch<React.SetStateAction<Recipe[]>>
@@ -27,13 +28,8 @@ export default function FavoriteRecipes() {
     useEffect(() => {
         const getFav = async () => {
             try {
-                const response = await fetch("/api/getFavoriteRecipes",
-                    {
-                        "credentials": 'include'
-                    }
-                )
-
-                const result = await response.json()
+                const response = await api.get("/api/getFavoriteRecipes")
+                const result = response.data
 
                 addFav.setFavRecipe(result);
 

@@ -1,11 +1,9 @@
 import express from "express";
 import cors from "cors";
-import path from "path";
 import session from "express-session";
 import * as sqlite from "sqlite";
 import { Database } from "sqlite";
 import sqlite3 from "sqlite3";
-import axios from "axios";
 const SQLiteStore = require("connect-sqlite3")(session);
 
 declare module "express-session" {
@@ -51,25 +49,6 @@ require("dotenv").config();
     await database.run("PRAGMA foreign_keys = ON");
     console.log("Redo att göra databasanrop");
 
-    const api = axios.create({
-      baseURL: "/",
-      withCredentials: true,
-    });
-    //Use axios interceptor to navigate the user when session is expired(401) and  if url is not Login since session can expire on other pages
-    api.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        if (
-          error.response?.status === 401 &&
-          !error.config.url.includes("/Login?sessionExpired=1")
-        ) {
-          return error.response
-            .status(401)
-            .send({ message: "Session expired" });
-        }
-        return Promise.reject(error);
-      },
-    );
     const bcrypt = require("bcrypt");
     //Expire cookie time
     const twoHours = 1000 * 60 * 60 * 2;
@@ -173,55 +152,51 @@ require("dotenv").config();
             };
           }
         }
-        if (cookieUserInfo) {
-          res.status(200).send(cookieUserInfo);
-        } else {
-          res.status(400).send({ message: "Invalid email or password" });
-        }
-      } catch (error) {
-        res.status(400).send({ message: "Invalid email or password" });
+        res.status(200).send(cookieUserInfo);
+      } catch {
+        res.status(401).send({ message: "Invalid email or password" });
       }
     });
 
     //Get favorite recipes
     app.get("/api/getFavoriteRecipes", async (req, res) => {
-      const userId = req.session.Users?.id;
-      let favs = await database.all(
-        `SELECT recipes.id, name, cookTimeMinutes, servings, prepTimeMinutes, recipe_image, cuisine, rating FROM recipes INNER JOIN FavoriteRecipes ON recipes.id = FavoriteRecipes.recipe_id WHERE FavoriteRecipes.userId = ?`,
-        [userId],
-      );
-      if (favs && userId) {
+      try {
+        const userId = req.session.Users?.id;
+        let favs = await database.all(
+          `SELECT recipes.id, name, cookTimeMinutes, servings, prepTimeMinutes, recipe_image, cuisine, rating FROM recipes INNER JOIN FavoriteRecipes ON recipes.id = FavoriteRecipes.recipe_id WHERE FavoriteRecipes.userId = ?`,
+          [userId],
+        );
         res.status(200).send(favs);
-      } else {
+      } catch {
         res.status(400).send({ message: "Not logged in" });
       }
     });
 
     //Remove favorite recipe
     app.delete("/api/removeFavoriteRecipe", async (req, res) => {
-      const userId = req.session.Users?.id;
-      let delFavRecipe = await database.run(
-        "DELETE FROM FavoriteRecipes WHERE userId=? AND recipe_id=?",
-        [userId, req.body.recipe_id],
-      );
-      if (delFavRecipe) {
+      try {
+        const userId = req.session.Users?.id;
+        let delFavRecipe = await database.run(
+          "DELETE FROM FavoriteRecipes WHERE userId=? AND recipe_id=?",
+          [userId, req.body.recipe_id],
+        );
         res.status(200).send(delFavRecipe);
-      } else {
-        res.status(400).send();
+      } catch {
+        res.status(400).send({ message: "Could not remove recipe" });
       }
     });
 
     //Add favorite recipe
     app.post("/api/addFavoriteRecipe", async (req, res) => {
-      const userId = req.session.Users?.id;
-      const recipeId = req.body.recipe_id;
-      let addFav = await database.run(
-        "INSERT INTO FavoriteRecipes(userId, recipe_id) VALUES(?,?)",
-        [userId, recipeId],
-      );
-      if (addFav) {
+      try {
+        const userId = req.session.Users?.id;
+        const recipeId = req.body.recipe_id;
+        let addFav = await database.run(
+          "INSERT INTO FavoriteRecipes(userId, recipe_id) VALUES(?,?)",
+          [userId, recipeId],
+        );
         res.status(200).send(addFav);
-      } else {
+      } catch {
         res.status(400).send({ message: "could not add to favorites" });
       }
     });
@@ -232,10 +207,9 @@ require("dotenv").config();
         let recipes = await database.all(
           "SELECT name, cuisine, recipe_image, cookTimeMinutes, servings, prepTimeMinutes, rating, id FROM recipes",
         );
-        res.send(recipes);
-      } catch (error) {
-        console.log(error, "Could not get recipes");
-        res.status(400).send();
+        res.status(200).send(recipes);
+      } catch {
+        res.status(400).send({ message: "Could not get recipes" });
       }
     });
 
@@ -245,34 +219,37 @@ require("dotenv").config();
         let popularRecipes = await database.all(
           "SELECT name, cuisine, recipe_image, rating, id FROM recipes WHERE rating > 4.6 ",
         );
-        res.send(popularRecipes);
-      } catch (error) {
-        console.log(error, "Could not get favorite recipes");
+        res.status(200).send(popularRecipes);
+      } catch {
         res.status(400).send({ message: "Could not get favorite recipes" });
       }
     });
     //Get selected recipe for recipe modal
     app.get("/api/recipes/:id", async (req, res) => {
-      let instructionsDetail = await database.all(
-        `SELECT recipes.id,instruction,name,cookTimeMinutes, servings,prepTimeMinutes
+      try {
+        let instructionsDetail = await database.all(
+          `SELECT recipes.id,instruction,name,cookTimeMinutes, servings,prepTimeMinutes
          FROM recipes INNER JOIN instructions
          ON recipes.id=instructions.recipe_id
          WHERE recipes.id= ?`,
-        [req.params.id],
-      );
+          [req.params.id],
+        );
 
-      let ingredientsDetail = await database.all(
-        `SELECT recipes.id,ingredient,name,cookTimeMinutes, servings,prepTimeMinutes
+        let ingredientsDetail = await database.all(
+          `SELECT recipes.id,ingredient,name,cookTimeMinutes, servings,prepTimeMinutes
          FROM recipes INNER JOIN ingredients
          ON recipes.id=ingredients.recipe_id
          WHERE recipes.id= ?`,
-        [req.params.id],
-      );
+          [req.params.id],
+        );
 
-      res.send({
-        ingredientsSection: ingredientsDetail,
-        instructionsSection: instructionsDetail,
-      });
+        res.status(200).send({
+          ingredientsSection: ingredientsDetail,
+          instructionsSection: instructionsDetail,
+        });
+      } catch {
+        res.status(400).send({ message: "Could not get recipe" });
+      }
     });
 
     app.listen(8080, () => {

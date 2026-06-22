@@ -10,6 +10,7 @@ import { FavContext } from '../FavoriteContext'
 import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../AuthContext'
 import RecipeRating from '../components/RecipeRating'
+import api from '../api'
 
 
 export interface Recipe {
@@ -47,8 +48,8 @@ export default function Recipes() {
     useEffect(() => {
         const getRecipes = async () => {
             try {
-                const response = await fetch("/api/recipes");
-                const result = await response.json();
+                const response = await api.get("/api/recipes");
+                const result = await response.data
 
                 setRecipes(result);
             } catch (error) {
